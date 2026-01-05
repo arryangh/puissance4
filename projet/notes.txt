@@ -1,0 +1,3 @@
+classe:
+    la grille (l'interface)
+    logique (validié de coup, minmax etc)
