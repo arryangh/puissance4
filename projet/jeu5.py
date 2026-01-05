@@ -6,6 +6,7 @@ sys.path.append('..')  # Pour importer depuis le dossier parent
 from Logiquev3 import *
 
 
+
 class GrillePuissance4:
     def __init__(self, root, rows=6, cols=7, nb_aligned=4, mode_ia=None, difficulte=None):
         """
