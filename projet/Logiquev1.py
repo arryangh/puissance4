@@ -107,7 +107,7 @@ def afficherMatrice(matrice):
     print("_" * (len(matrice[0]) * 4))
 
     # Indices de colonnes adaptatifs
-    indices = "   ".join(f"{i}" for i in range(len(matrice[0])))
+    indices = "   ".join(f"{i:2d}" for i in range(len(matrice[0])))
     print("  " + indices)
 
 

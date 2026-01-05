@@ -1,7 +1,15 @@
 ../projet
 ├── Logiquev1.py
+├── __pycache__
+│   └── Logiquev1.cpython-312.pyc
+├── affichage.py
 ├── arborescence.py
-└── images
-    ├── AUTOgenerate.py
-    ├── bottomCELL.png
-    └── normalCELL.png
+├── arborescence.txt
+├── images
+│   ├── AUTOgenerate.py
+│   ├── bottomCELL.png
+│   └── normalCELL.png
+├── jeu.py
+├── jeu2.py
+├── jeu3.py
+└── notes.txt

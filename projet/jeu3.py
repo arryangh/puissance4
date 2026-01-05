@@ -178,7 +178,7 @@ class GrillePuissance4:
         velocity = 0
         gravity = 3
         damping = 0.2
-        rayon = self.cell_size // 2   # Pions plus grands (était -20)
+        rayon = self.cell_size // 2 - 20  # Pions plus grands (était -20)
 
         # Créer le pion
         pion = self.canvas.create_oval(
@@ -279,8 +279,8 @@ if __name__ == "__main__":
     root = tk.Tk()
 
     # Exemples d'utilisation :
-    grille = GrillePuissance4(root, rows=6, cols=7, nb_aligned=4)  # Puissance 4 classique
+    # grille = GrillePuissance4(root, rows=6, cols=7, nb_aligned=4)  # Puissance 4 classique
     # grille = GrillePuissance4(root, rows=10, cols=10, nb_aligned=5)  # Puissance 5 sur 10×10
-    # grille = GrillePuissance4(root, rows=15, cols=15, nb_aligned=6)  # Puissance 6 sur 15×15
+    grille = GrillePuissance4(root, rows=15, cols=15, nb_aligned=6)  # Puissance 6 sur 15×15
 
     root.mainloop()
