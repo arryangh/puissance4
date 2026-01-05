@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 import sys
 
 sys.path.append('..')  # Pour importer depuis le dossier parent
-from Logiquev1 import *
+from Logiquev2 import *
 
 
 class GrillePuissance4:
