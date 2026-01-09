@@ -1,0 +1,21 @@
+Fonction MinMax(S:un noeud, p:entier, b:boolean)
+
+Variables val:entier
+
+Debut
+    Si p=0 ou S est une feuille alors
+        retourner f(S)
+    FinSi
+    Si b alors
+        val <- -inf
+        Pour chaque filsC de S faire
+            val <- max(val, MinMax(c, p-1, Faux))
+        FinPour
+    Sinon
+        val <- +inf
+        Pour chaque filsC de S faire
+            val <- min(val, MinMax(c, p-1, Vrai))
+        FinPour
+    FinSi
+    retourner(val)
+Fin
