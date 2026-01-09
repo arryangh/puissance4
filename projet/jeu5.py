@@ -376,7 +376,7 @@ def fenetre_home():
         relief="raised",
         bd=3,
         cursor="hand2",
-        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=3)
+        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=1)
     )
     btn_facile.pack(pady=10)
 
@@ -392,7 +392,7 @@ def fenetre_home():
         relief="raised",
         bd=3,
         cursor="hand2",
-        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=5)
+        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=3)
     )
     btn_moyen.pack(pady=10)
 
@@ -408,7 +408,7 @@ def fenetre_home():
         relief="raised",
         bd=3,
         cursor="hand2",
-        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=7)
+        command=lambda: lancer_jeu(mode_ia="jaune", difficulte=5)
     )
     btn_difficile.pack(pady=10)
 

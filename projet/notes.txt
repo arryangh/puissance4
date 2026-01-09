@@ -1,3 +1,24 @@
 classe:
     la grille (l'interface)
     logique (validié de coup, minmax etc)
+
+
+les boutons:
+    - home
+    - rejouer
+    - undo
+    - redo
+
+
+plan:
+CODE IA => reverse engineering => s'approprier le code => faire le rapport (35p)
+
+
+jusqu'à 11 janvier 2026:
+    - faire un code minimaliste et fonctionnel qui respecte le cahier des charges
+
+jusqu'à 18 janvier 2026:
+    - faire un code propre avec les conventions de nommages et tout ce qui est demandé par tkindt
+    - rajouter des fonctionalités supplémentaires si on a le temps (il faut que ce soit modulaire et possible
+        de les enlever (dans des fonctions séparée)
+

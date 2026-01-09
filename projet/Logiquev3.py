@@ -252,7 +252,7 @@ def meilleur_coup_ia(matrice, joueur_ia, profondeur=5, nb_aligned=4):
         if verifier_victoire(temp_matrice, nb_aligned) == joueur_ia:
             return coup  # Gagner immédiatement !
 
-    # PRIORITÉ 2 : Vérifier si l'adversaire peut gagner (BLOQUER)
+    # PRIORITÉ 2 : Vérifier si l'adversaire peut gagner (BLOQUER directement)
     for coup in coups:
         temp_matrice = copy.deepcopy(matrice)
         ajouter_pion(temp_matrice, -joueur_ia, coup)
