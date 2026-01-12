@@ -1,6 +1,12 @@
 import tkinter as tk
 from PIL import Image, ImageDraw
 
+"""
+bleu utilisé dans le jeu
+body_color="#FFF4CC", border_color="#D4B24C"
+"""
+
+
 
 def generate_cell_images(body_color="#FFF4CC", border_color="#D4B24C", size=1500, border_width=30):
     """
@@ -74,3 +80,4 @@ def generate_cell_images(body_color="#FFF4CC", border_color="#D4B24C", size=1500
 
 # Génération
 generate_cell_images(body_color="#1B62F1", border_color="#143B6C")
+# generate_cell_images(body_color="#FF62C2", border_color="#E12E8B")

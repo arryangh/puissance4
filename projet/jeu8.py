@@ -50,8 +50,13 @@ class GrillePuissance4:
         }
 
         # Chargement et redimensionnement des images
+        """
         self.img_normal = Image.open("images/normalCELL.png")
         self.img_bottom = Image.open("images/bottomCELL.png")
+        """
+        self.img_normal = Image.open("../affichage/exportAuto/normalCELL.png")
+        self.img_bottom = Image.open("../affichage/exportAuto/bottomCELL.png"
+                                     "")
 
         self.img_normal = self.img_normal.resize((self.cell_size, self.cell_size), Image.LANCZOS)
         self.img_bottom = self.img_bottom.resize((self.cell_size, self.cell_size), Image.LANCZOS)
