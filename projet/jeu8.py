@@ -40,6 +40,7 @@ class GrillePuissance4:
 
         # Création de la matrice de jeu
         self.matrice = createMatrice(rows, cols)
+        reset_historique(self.matrice) # ajout du système d'historique
         self.joueur_actuel = 1  # 1 pour rouge, -1 pour jaune
 
         # Couleurs des joueurs
@@ -58,13 +59,13 @@ class GrillePuissance4:
         self.tk_img_normal = ImageTk.PhotoImage(self.img_normal)
         self.tk_img_bottom = ImageTk.PhotoImage(self.img_bottom)
 
-        # Configuration de la fenêtre
-        window_width = self.cols * self.cell_size + 40
+        # Configuration de la fenêtre - MODIFIÉ ICI ↓
+        window_width = self.cols * self.cell_size + 340  # +340 au lieu de +40
         window_height = self.rows * self.cell_size + 40
         self.root.geometry(f"{window_width}x{window_height}")
         self.root.title("Puissance 4")
 
-        # Canvas pour afficher la grille
+        # Canvas pour afficher la grille - MODIFIÉ ICI ↓
         self.canvas = tk.Canvas(
             root,
             width=self.cols * self.cell_size,
@@ -72,7 +73,7 @@ class GrillePuissance4:
             bg="white",
             highlightthickness=0
         )
-        self.canvas.pack(padx=20, pady=20)
+        self.canvas.pack(side=tk.LEFT, padx=20, pady=20)  # ← Ajout de side=tk.LEFT
 
         # Affichage de la grille
         self.afficher_grille()
@@ -100,6 +101,10 @@ class GrillePuissance4:
                     self.canvas.create_image(x, y, image=self.tk_img_normal, anchor="nw", tags="grille")
 
         self.canvas.tag_raise("grille")
+
+
+
+
 
     def sur_mouvement_souris(self, event):
         """Gère le survol de la souris pour afficher l'effet d'ombre"""
@@ -187,6 +192,7 @@ class GrillePuissance4:
             return
 
         resultat = ajouter_pion(self.matrice, self.joueur_actuel, col)
+        sauvegarder_etat(self.matrice) # sauvegarder le coup dans l'historique
 
         if resultat == 0:
             self.animer_chute_pion(col, row_destination, self.joueur_actuel)
@@ -469,6 +475,9 @@ def fenetre_parametres(root, mode_ia, difficulte):
                 else:
                     jeu.joueur_actuel = -1
 
+        print("ici le jeu est lancé")
+        fenetre_action(root, jeu, lancer_jeu) # fenetre à cauté de la grille de jeu
+
     btn_jouer = tk.Button(
         root,
         text="🎮 JOUER",
@@ -500,6 +509,98 @@ def fenetre_parametres(root, mode_ia, difficulte):
     )
     btn_retour.pack(pady=10)
 
+
+
+
+def fenetre_action(root, jeu, lancer_jeu):
+    """
+    Crée une section d'actions à côté de la grille avec des boutons
+
+    Args:
+        root: fenêtre Tkinter principale
+        canvas: le canvas de la grille de jeu
+    """
+    # Frame pour contenir les boutons d'action
+    frame_actions = tk.Frame(root, bg="white")
+    frame_actions.pack(side=tk.LEFT, padx=20, pady=20, fill=tk.Y)
+
+    # Titre de la section
+    titre_actions = tk.Label(
+        frame_actions,
+        text="🎮 ACTIONS",
+        font=("Arial", 16, "bold"),
+        bg="white",
+        fg="#333333"
+    )
+    titre_actions.pack(pady=10)
+
+    # Frame pour les boutons Undo et Redo (côte à côte)
+    frame_undo_redo = tk.Frame(frame_actions, bg="white")
+    frame_undo_redo.pack(pady=10)
+
+    # Bouton Undo
+    btn_undo = tk.Button(
+        frame_undo_redo,
+        text="↶ Undo",
+        font=("Arial", 12, "bold"),
+        bg="#FF9800",
+        fg="white",
+        width=8,
+        height=2,
+        relief="raised",
+        bd=3,
+        cursor="hand2",
+        command=lambda: undo_gui(jeu) # undo côté GUI
+    )
+    btn_undo.pack(side=tk.LEFT, padx=5)
+
+    # Bouton Redo
+    btn_redo = tk.Button(
+        frame_undo_redo,
+        text="↷ Redo",
+        font=("Arial", 12, "bold"),
+        bg="#2196F3",
+        fg="white",
+        width=8,
+        height=2,
+        relief="raised",
+        bd=3,
+        cursor="hand2",
+        command=lambda: redo_gui(jeu) # redo côté GUI
+    )
+    btn_redo.pack(side=tk.LEFT, padx=5)
+
+    # Bouton Rejouer
+    btn_rejouer = tk.Button(
+        frame_actions,
+        text="🔄 Rejouer",
+        font=("Arial", 14, "bold"),
+        bg="#4CAF50",
+        fg="white",
+        width=18,
+        height=2,
+        relief="raised",
+        bd=3,
+        cursor="hand2",
+        command=lancer_jeu
+    )
+    btn_rejouer.pack(pady=10)
+
+    # Bouton Home
+    btn_home = tk.Button(
+        frame_actions,
+        text="🏠 Home",
+        font=("Arial", 14, "bold"),
+        bg="#757575",
+        fg="white",
+        width=18,
+        height=2,
+        relief="raised",
+        bd=3,
+        cursor="hand2",
+        command=lambda:fenetre_home(root) #retourner dans home
+    )
+    btn_home.pack(pady=10)
 
 def fenetre_home(root=None):
     """
@@ -612,6 +713,61 @@ def fenetre_home(root=None):
 
     if root.winfo_exists():
         root.mainloop()
+
+
+
+
+
+# fonctions undo / Redo côté GUI:
+
+def rafraichir_grille(jeu):
+    jeu.canvas.delete("pion")
+    jeu.pions_affiches.clear()
+
+    for r in range(jeu.rows):
+        for c in range(jeu.cols):
+            val = jeu.matrice[r][c]
+            if val != 0:
+                couleur = jeu.couleurs[val]
+                x = c * jeu.cell_size + jeu.cell_size // 2
+                y = r * jeu.cell_size + jeu.cell_size // 2
+                rayon = jeu.cell_size // 2
+                jeu.canvas.create_oval(
+                    x - rayon, y - rayon,
+                    x + rayon, y + rayon,
+                    fill=couleur, outline="#8B4513", width=3, tags="pion"
+                )
+    jeu.canvas.tag_raise("grille")
+
+
+def undo_gui(jeu):
+    if undo_redo(jeu.matrice, "u", jeu.mode_ia) == 0:
+
+        # En mode IA on recule de 2 coups → le joueur rejoue
+        if jeu.mode_ia is not None:
+            # Le joueur reste le même
+            pass
+        else:
+            # En 1v1 on change de joueur
+            jeu.joueur_actuel *= -1
+
+        jeu.partie_terminee = False
+        rafraichir_grille(jeu)
+
+
+def redo_gui(jeu):
+    if undo_redo(jeu.matrice, "r", jeu.mode_ia) == 0:
+
+        # En mode IA on rejoue un tour complet → le joueur reste le même
+        if jeu.mode_ia is not None:
+            pass
+        else:
+            jeu.joueur_actuel *= -1
+
+        rafraichir_grille(jeu)
+
+
+
 
 
 # Lancement de l'application

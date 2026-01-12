@@ -1,5 +1,66 @@
 import copy
 
+#
+historique_matrices = []
+index_historique = -1
+
+
+
+def reset_historique(matrice):
+    """Appelé au début d'une nouvelle partie"""
+    global historique_matrices, index_historique
+    historique_matrices = []
+    index_historique = -1
+    sauvegarder_etat(matrice)
+
+def sauvegarder_etat(matrice):
+    """Sauvegarde l'état actuel de la matrice dans l'historique"""
+    global historique_matrices, index_historique
+
+    # Si on a fait undo puis un nouveau coup → on coupe le futur
+    if index_historique < len(historique_matrices) - 1:
+        historique_matrices = historique_matrices[:index_historique + 1]
+
+    historique_matrices.append(copy.deepcopy(matrice))
+    index_historique += 1
+
+def undo_redo(matrice, action, mode_ia): # avec le mode pour faire 1 undo/redo pour 1v1 et 2 undo/redo pour IA
+    global historique_matrices, index_historique
+
+    # En mode IA on saute 2 coups, sinon 1
+    pas = 2 if mode_ia is not None else 1
+
+    if action == "u":  # UNDO
+        if index_historique - pas >= 0:
+            index_historique -= pas
+        else:
+            return -1
+
+    elif action == "r":  # REDO
+        if index_historique + pas < len(historique_matrices):
+            index_historique += pas
+        else:
+            return -1
+
+    else:
+        return -1
+
+    # Recharger la matrice depuis l’historique
+    etat = historique_matrices[index_historique]
+    for i in range(len(matrice)):
+        for j in range(len(matrice[0])):
+            matrice[i][j] = etat[i][j]
+
+    return 0
+
+
+
+
+
+
+
+
+
 
 def createMatrice(rows, cols):
     """Crée une matrice vide de taille rows x cols"""
