@@ -1,10 +1,14 @@
 import tkinter as tk
-from interface import fenetre_home
+from controleur import Puissance4Controller
+
 
 def main():
     root = tk.Tk()
     root.title("Puissance 4")
-    fenetre_home(root)
+    controller = Puissance4Controller(root)
+    controller.lancer_application()
+    root.mainloop()
+
 
 if __name__ == "__main__":
     main()
