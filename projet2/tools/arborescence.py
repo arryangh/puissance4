@@ -34,7 +34,7 @@ def generer_arborescence(dossier, prefixe=""):
     return contenu
 
 # Point d'entrée
-racine = "../projet"
+racine = "../../projet2"
 arborescence = generer_arborescence(racine)
 
 # Écriture dans un fichier texte

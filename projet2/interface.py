@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 import sys
 
 sys.path.append('..')  # Pour importer depuis le dossier parent
-from Logiquev3 import *
+from logique import *
 
 
 class GrillePuissance4:
@@ -775,6 +775,3 @@ def redo_gui(jeu):
 
 
 
-# Lancement de l'application
-if __name__ == "__main__":
-    fenetre_home()

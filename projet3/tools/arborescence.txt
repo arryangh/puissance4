@@ -1,0 +1,13 @@
+../../projet2
+├── __pycache__
+│   └── logique.cpython-312.pyc
+├── images
+│   ├── AUTOgenerate.py
+│   ├── bottomCELL.png
+│   └── normalCELL.png
+├── interface.py
+├── logique.py
+├── main.py
+└── tools
+    ├── arborescence.py
+    └── arborescence.txt
