@@ -6,6 +6,7 @@ from numba import njit
 
 # =====================
 # OPENING BOOK
+
 # =====================
 
 BOOK_MAX_MOVES = 10   # nombre de demi-coups couverts

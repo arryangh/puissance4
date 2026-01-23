@@ -330,7 +330,7 @@ def fenetre_parametres(root, mode_ia, difficulte):
     # Titre
     titre = tk.Label(
         root,
-        text="⚙️ PARAMÈTRES ⚙️",
+        text="PARAMÈTRES",
         font=("Arial", 28, "bold"),
         bg="white",
         fg="#333333"
@@ -340,11 +340,11 @@ def fenetre_parametres(root, mode_ia, difficulte):
     # Affichage du mode sélectionné
     if mode_ia is None:
         mode_text = "Mode 1v1"
-        mode_color = "#4CAF50"
+        mode_color = "#000000"
     else:
         difficulte_text = {1: "Facile", 3: "Moyen", 5: "Difficile"}.get(difficulte, "Moyen")
         mode_text = f"Contre l'IA - {difficulte_text}"
-        mode_color = "#2196F3"
+        mode_color = "#000000"
 
     mode_label = tk.Label(
         root,
@@ -413,16 +413,16 @@ def fenetre_parametres(root, mode_ia, difficulte):
         combo_couleur.grid(row=4, column=1, padx=10, pady=10)
 
         # Label pour afficher la couleur de l'IA
-        label_couleur_ia = tk.Label(frame_params, text="Couleur IA : Jaune", font=("Arial", 12, "italic"), bg="white",
-                                    fg="#FF9800")
+        label_couleur_ia = tk.Label(frame_params, text="Couleur IA : Jaune⬤", font=("Arial", 12, "italic"), bg="white",
+                                    fg="#FFD700")
         label_couleur_ia.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
         def update_couleur_ia(*args):
             """Met à jour la couleur de l'IA en fonction de la couleur du joueur"""
             if var_couleur_joueur.get() == "Rouge":
-                label_couleur_ia.config(text="Couleur IA : Jaune", fg="#FF9800")
+                label_couleur_ia.config(text="Couleur IA : Jaune⬤", fg="#FFD700")
             else:
-                label_couleur_ia.config(text="Couleur IA : Rouge", fg="#FF4444")
+                label_couleur_ia.config(text="Couleur IA : Rouge⬤", fg="#FF4444")
 
         var_couleur_joueur.trace("w", update_couleur_ia)
 
@@ -485,7 +485,7 @@ def fenetre_parametres(root, mode_ia, difficulte):
 
     btn_jouer = tk.Button(
         root,
-        text="🎮 JOUER",
+        text="JOUER",
         font=("Arial", 18, "bold"),
         bg="#4CAF50",
         fg="white",
@@ -501,7 +501,7 @@ def fenetre_parametres(root, mode_ia, difficulte):
     # Bouton Retour
     btn_retour = tk.Button(
         root,
-        text="⬅️ Retour au menu",
+        text="Retour au menu",
         font=("Arial", 14),
         bg="#757575",
         fg="white",
@@ -532,7 +532,7 @@ def fenetre_action(root, jeu, lancer_jeu):
     # Titre de la section
     titre_actions = tk.Label(
         frame_actions,
-        text="🎮 ACTIONS",
+        text="ACTIONS",
         font=("Arial", 16, "bold"),
         bg="white",
         fg="#333333"
@@ -546,7 +546,7 @@ def fenetre_action(root, jeu, lancer_jeu):
     # Bouton Undo
     btn_undo = tk.Button(
         frame_undo_redo,
-        text="↶ Undo",
+        text="Undo",
         font=("Arial", 12, "bold"),
         bg="#FF9800",
         fg="white",
@@ -562,7 +562,7 @@ def fenetre_action(root, jeu, lancer_jeu):
     # Bouton Redo
     btn_redo = tk.Button(
         frame_undo_redo,
-        text="↷ Redo",
+        text="Redo",
         font=("Arial", 12, "bold"),
         bg="#2196F3",
         fg="white",
@@ -578,7 +578,7 @@ def fenetre_action(root, jeu, lancer_jeu):
     # Bouton Rejouer
     btn_rejouer = tk.Button(
         frame_actions,
-        text="🔄 Rejouer",
+        text="Rejouer",
         font=("Arial", 14, "bold"),
         bg="#4CAF50",
         fg="white",
@@ -594,7 +594,7 @@ def fenetre_action(root, jeu, lancer_jeu):
     # Bouton Home
     btn_home = tk.Button(
         frame_actions,
-        text="🏠 Home",
+        text="Home",
         font=("Arial", 14, "bold"),
         bg="#757575",
         fg="white",
@@ -625,7 +625,7 @@ def fenetre_home(root=None):
     # Titre
     titre = tk.Label(
         root,
-        text="🎮 PUISSANCE 4 🎮",
+        text="PUISSANCE 4",
         font=("Arial", 28, "bold"),
         bg="white",
         fg="#333333"
@@ -645,9 +645,9 @@ def fenetre_home(root=None):
     # Bouton 1v1
     btn_1v1 = tk.Button(
         root,
-        text="👥 Mode 1v1",
+        text="Mode 1v1",
         font=("Arial", 16, "bold"),
-        bg="#4CAF50",
+        bg="#2196F3", #2196F3
         fg="white",
         width=20,
         height=2,
@@ -671,9 +671,9 @@ def fenetre_home(root=None):
     # Bouton Facile
     btn_facile = tk.Button(
         root,
-        text="😊 Facile",
+        text="Facile ★",
         font=("Arial", 16, "bold"),
-        bg="#2196F3",
+        bg="#4CAF50", #4CAF50
         fg="white",
         width=20,
         height=2,
@@ -687,9 +687,9 @@ def fenetre_home(root=None):
     # Bouton Moyen
     btn_moyen = tk.Button(
         root,
-        text="😐 Moyen",
+        text="Moyen ★★",
         font=("Arial", 16, "bold"),
-        bg="#FF9800",
+        bg="#FF9800", #FFD700
         fg="white",
         width=20,
         height=2,
@@ -703,7 +703,7 @@ def fenetre_home(root=None):
     # Bouton Difficile
     btn_difficile = tk.Button(
         root,
-        text="😈 Difficile",
+        text="Difficile ★★★",
         font=("Arial", 16, "bold"),
         bg="#F44336",
         fg="white",

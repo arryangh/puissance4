@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 import time
 from numba import njit
+import os
+import pickle
 
 
 # =====================
@@ -10,9 +12,15 @@ from numba import njit
 
 BOOK_MAX_MOVES = 10   # nombre de demi-coups couverts
 
-BOOK = {
-    0x0000000000000000: 3,  # position initiale -> centre
-}
+BOOK_FILE = "opening_book.bin"
+
+if os.path.exists(BOOK_FILE):
+    with open(BOOK_FILE, "rb") as f:
+        BOOK = pickle.load(f)
+    print(f"Opening book chargé : {len(BOOK)} positions")
+else:
+    BOOK = {}
+    print("Aucun opening book trouvé")
 
 def position_hash(board0, board1):
     return (board0 * 6364136223846793005 + board1) & 0xFFFFFFFFFFFFFFFF
@@ -227,7 +235,7 @@ class Connect4GUI:
         if check_win(board):
             self.draw()
             self.game_over = True
-            messagebox.showinfo("Fin de partie", "🟡 Tu as gagné !")
+            messagebox.showinfo("Fin de partie", "🟡 l'IA a gagné !")
             return
 
         if self.moves == MAX_MOVES:
