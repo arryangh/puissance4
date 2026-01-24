@@ -11,7 +11,7 @@ class Puissance4Controller:
 
         self.modele = None
         self.vue = None
-
+        self.tour_verrouille = False
 
     # ------------------------------------------------------------------
     # LANCEMENT
@@ -54,6 +54,9 @@ class Puissance4Controller:
     # ------------------------------------------------------------------
 
     def jouer_colonne(self, col):
+        if self.tour_verrouille:
+            return  # IGNORE les clics
+
         if not self.modele:
             return
 
@@ -76,11 +79,14 @@ class Puissance4Controller:
 
     def jouer_ia_si_necessaire(self):
         if self.modele.est_tour_ia():
+            self.tour_verrouille = True
             self.root.after(300, self._tour_ia)
 
     def _tour_ia(self):
         self.modele.jouer_coup_ia()
         self.rafraichir_vue()
+
+        self.tour_verrouille = False
         self.tour_suivant()
 
     # ------------------------------------------------------------------
@@ -88,10 +94,16 @@ class Puissance4Controller:
     # ------------------------------------------------------------------
 
     def undo(self):
+        if self.tour_verrouille:
+            return
+
         if self.modele and self.modele.annuler_coup():
             self.rafraichir_vue()
 
     def redo(self):
+        if self.tour_verrouille:
+            return
+
         if self.modele and self.modele.refaire_coup():
             self.rafraichir_vue()
 
@@ -102,4 +114,3 @@ class Puissance4Controller:
     def rafraichir_vue(self):
         self.vue.afficher_pions(self.modele.get_matrice())
         self.vue.afficher_joueur_actuel(self.modele.get_joueur_actuel())
-

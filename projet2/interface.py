@@ -775,3 +775,6 @@ def redo_gui(jeu):
 
 
 
+# Lancement de l'application
+if __name__ == "__main__":
+    fenetre_home()
