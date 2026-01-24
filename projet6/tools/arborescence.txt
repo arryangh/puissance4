@@ -1,0 +1,11 @@
+../../projet2
+├── images
+│   ├── AUTOgenerate.py
+│   ├── bottomCELL.png
+│   └── normalCELL.png
+├── interface.py
+├── logique.py
+├── main.py
+└── tools
+    ├── arborescence.py
+    └── arborescence.txt
