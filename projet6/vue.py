@@ -21,45 +21,45 @@ class VueGrille:
             colonnes (int): Nombre de colonnes de la grille
             taille_cellule (int): Taille en pixels d'une cellule
         """
-        self.racine = racine
-        self.lignes = lignes
-        self.colonnes = colonnes
-        self.taille_cellule = taille_cellule
+        self.VGR_racine = racine
+        self.VGR_lignes = lignes
+        self.VGR_colonnes = colonnes
+        self.VGR_taille_cellule = taille_cellule
 
-        self.colonne_survol = None
-        self.pions_affiches = {}
+        self.VGR_colonne_survol = None
+        self.VGR_pions_affiches = {}
 
         # Couleurs des joueurs
-        self.couleurs = {
+        self.VGR_couleurs = {
             1: "#FF4444",  # Rouge pour joueur 1
             -1: "#FFD700"  # Jaune pour joueur -1
         }
 
         # Chargement et redimensionnement des images (les images peuvent être générées par le programme "AUTOgenerate.py"
-        self.img_normale = Image.open("../affichage/exportAuto/normalCELL.png")
-        self.img_bas = Image.open("../affichage/exportAuto/bottomCELL.png")
+        self.VGR_img_normale = Image.open("../affichage/exportAuto/normalCELL.png")
+        self.VGR_img_bas = Image.open("../affichage/exportAuto/bottomCELL.png")
 
-        self.img_normale = self.img_normale.resize((self.taille_cellule, self.taille_cellule), Image.LANCZOS)
-        self.img_bas = self.img_bas.resize((self.taille_cellule, self.taille_cellule), Image.LANCZOS)
+        self.VGR_img_normale = self.VGR_img_normale.resize((self.VGR_taille_cellule, self.VGR_taille_cellule), Image.LANCZOS)
+        self.VGR_img_bas = self.VGR_img_bas.resize((self.VGR_taille_cellule, self.VGR_taille_cellule), Image.LANCZOS)
 
-        self.tk_img_normale = ImageTk.PhotoImage(self.img_normale)
-        self.tk_img_bas = ImageTk.PhotoImage(self.img_bas)
+        self.VGR_tk_img_normale = ImageTk.PhotoImage(self.VGR_img_normale)
+        self.VGR_tk_img_bas = ImageTk.PhotoImage(self.VGR_img_bas)
 
         # Configuration de la fenêtre
-        largeur_fenetre = self.colonnes * self.taille_cellule + 340
-        hauteur_fenetre = self.lignes * self.taille_cellule + 40
-        self.racine.geometry(f"{largeur_fenetre}x{hauteur_fenetre}")
-        self.racine.title("Puissance 4")
+        largeur_fenetre = self.VGR_colonnes * self.VGR_taille_cellule + 340
+        hauteur_fenetre = self.VGR_lignes * self.VGR_taille_cellule + 40
+        self.VGR_racine.geometry(f"{largeur_fenetre}x{hauteur_fenetre}")
+        self.VGR_racine.title("Puissance 4")
 
         # Canvas pour afficher la grille
-        self.canvas = tk.Canvas(
+        self.VGR_canvas = tk.Canvas(
             racine,
-            width=self.colonnes * self.taille_cellule,
-            height=self.lignes * self.taille_cellule,
+            width=self.VGR_colonnes * self.VGR_taille_cellule,
+            height=self.VGR_lignes * self.VGR_taille_cellule,
             bg="white",
             highlightthickness=0
         )
-        self.canvas.pack(side=tk.LEFT, padx=20, pady=20)
+        self.VGR_canvas.pack(side=tk.LEFT, padx=20, pady=20)
 
         self.afficher_grille()
 
@@ -70,19 +70,19 @@ class VueGrille:
         Utilise une image différente pour la ligne du bas (bottomCELL) (avec le trait noir en bas du carré)
         et une image normale pour les autres lignes. (sans le trait noi en bas du carré)
         """
-        self.canvas.delete("grille")
+        self.VGR_canvas.delete("grille")
 
-        for ligne in range(self.lignes):
-            for colonne in range(self.colonnes):
-                x = colonne * self.taille_cellule
-                y = ligne * self.taille_cellule
+        for ligne in range(self.VGR_lignes):
+            for colonne in range(self.VGR_colonnes):
+                x = colonne * self.VGR_taille_cellule
+                y = ligne * self.VGR_taille_cellule
 
-                if ligne == self.lignes - 1:
-                    self.canvas.create_image(x, y, image=self.tk_img_bas, anchor="nw", tags="grille")
+                if ligne == self.VGR_lignes - 1:
+                    self.VGR_canvas.create_image(x, y, image=self.VGR_tk_img_bas, anchor="nw", tags="grille")
                 else:
-                    self.canvas.create_image(x, y, image=self.tk_img_normale, anchor="nw", tags="grille")
+                    self.VGR_canvas.create_image(x, y, image=self.VGR_tk_img_normale, anchor="nw", tags="grille")
 
-        self.canvas.tag_raise("grille")
+        self.VGR_canvas.tag_raise("grille")
 
     def afficher_effet_survol(self, colonne):
         """
@@ -91,15 +91,15 @@ class VueGrille:
         Args:
             colonne (int): L'indice de la colonne à surligner
         """
-        self.canvas.delete("survol")
-        self.colonne_survol = colonne
+        self.VGR_canvas.delete("survol")
+        self.VGR_colonne_survol = colonne
 
-        for ligne in range(self.lignes):
-            x = colonne * self.taille_cellule
-            y = ligne * self.taille_cellule
+        for ligne in range(self.VGR_lignes):
+            x = colonne * self.VGR_taille_cellule
+            y = ligne * self.VGR_taille_cellule
 
-            self.canvas.create_rectangle(
-                x, y, x + self.taille_cellule, y + self.taille_cellule,
+            self.VGR_canvas.create_rectangle(
+                x, y, x + self.VGR_taille_cellule, y + self.VGR_taille_cellule,
                 fill="gray", stipple="gray50", tags="survol"
             )
 
@@ -107,8 +107,8 @@ class VueGrille:
         """
         Efface l'effet de survol de la grille.
         """
-        self.canvas.delete("survol")
-        self.colonne_survol = None
+        self.VGR_canvas.delete("survol")
+        self.VGR_colonne_survol = None
 
     def animer_chute_pion(self, colonne, ligne_finale, joueur, rappel):
         """
@@ -123,17 +123,17 @@ class VueGrille:
             joueur (int): 1 ou -1 selon le joueur
             rappel (callable): Fonction à appeler quand l'animation est terminée
         """
-        couleur = self.couleurs[joueur]
-        x_centre = colonne * self.taille_cellule + self.taille_cellule // 2
-        y_finale = ligne_finale * self.taille_cellule + self.taille_cellule // 2
+        couleur = self.VGR_couleurs[joueur]
+        x_centre = colonne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
+        y_finale = ligne_finale * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
 
-        y = -self.taille_cellule // 2
+        y = -self.VGR_taille_cellule // 2
         VELOCITE = 0
         GRAVITE = 3
         AMORTISSEMENT = 0.2
-        rayon = self.taille_cellule // 2
+        rayon = self.VGR_taille_cellule // 2
 
-        pion = self.canvas.create_oval(
+        pion = self.VGR_canvas.create_oval(
             x_centre - rayon, y - rayon,
             x_centre + rayon, y + rayon,
             fill=couleur, outline="#8B4513", width=3, tags="pion"
@@ -163,24 +163,24 @@ class VueGrille:
                 VELOCITE = -VELOCITE * AMORTISSEMENT
 
                 if abs(VELOCITE) < 0.5:
-                    self.canvas.coords(
+                    self.VGR_canvas.coords(
                         pion,
                         x_centre - rayon, y_finale - rayon,
                         x_centre + rayon, y_finale + rayon
                     )
-                    self.pions_affiches[(ligne_finale, colonne)] = pion
-                    self.canvas.tag_raise("grille")
+                    self.VGR_pions_affiches[(ligne_finale, colonne)] = pion
+                    self.VGR_canvas.tag_raise("grille")
                     rappel()
                     return
 
-            self.canvas.coords(
+            self.VGR_canvas.coords(
                 pion,
                 x_centre - rayon, y - rayon,
                 x_centre + rayon, y + rayon
             )
 
-            self.canvas.tag_raise("grille")
-            self.racine.after(16, animer)
+            self.VGR_canvas.tag_raise("grille")
+            self.VGR_racine.after(16, animer)
 
         animer()
 
@@ -191,16 +191,16 @@ class VueGrille:
         Args:
             message (str): Le texte du message à afficher
         """
-        largeur = self.colonnes * self.taille_cellule
-        hauteur = self.lignes * self.taille_cellule
+        largeur = self.VGR_colonnes * self.VGR_taille_cellule
+        hauteur = self.VGR_lignes * self.VGR_taille_cellule
 
-        self.canvas.create_rectangle(
+        self.VGR_canvas.create_rectangle(
             largeur // 4, hauteur // 2 - 40,
             3 * largeur // 4, hauteur // 2 + 40,
             fill="white", outline="black", width=3, tags="message"
         )
 
-        self.canvas.create_text(
+        self.VGR_canvas.create_text(
             largeur // 2, hauteur // 2,
             text=message, font=("Arial", 20, "bold"),
             tags="message"
@@ -216,24 +216,24 @@ class VueGrille:
         Args:
             matrice (list): La matrice de jeu à afficher
         """
-        self.canvas.delete("pion")
-        self.canvas.delete("message")  # Supprimer le message de victoire
-        self.pions_affiches.clear()
+        self.VGR_canvas.delete("pion")
+        self.VGR_canvas.delete("message")  # Supprimer le message de victoire
+        self.VGR_pions_affiches.clear()
 
-        for ligne in range(self.lignes):
-            for colonne in range(self.colonnes):
+        for ligne in range(self.VGR_lignes):
+            for colonne in range(self.VGR_colonnes):
                 valeur = matrice[ligne][colonne]
                 if valeur != 0:
-                    couleur = self.couleurs[valeur]
-                    x = colonne * self.taille_cellule + self.taille_cellule // 2
-                    y = ligne * self.taille_cellule + self.taille_cellule // 2
-                    rayon = self.taille_cellule // 2
-                    self.canvas.create_oval(
+                    couleur = self.VGR_couleurs[valeur]
+                    x = colonne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
+                    y = ligne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
+                    rayon = self.VGR_taille_cellule // 2
+                    self.VGR_canvas.create_oval(
                         x - rayon, y - rayon,
                         x + rayon, y + rayon,
                         fill=couleur, outline="#8B4513", width=3, tags="pion"
                     )
-        self.canvas.tag_raise("grille")
+        self.VGR_canvas.tag_raise("grille")
 
 
 class VueAccueil:
@@ -251,9 +251,9 @@ class VueAccueil:
         Args:
             racine (tk.Tk): Fenêtre principale Tkinter
         """
-        self.racine = racine
-        self.racine.geometry("400x500")
-        self.racine.configure(bg="white")
+        self.VAC_racine = racine
+        self.VAC_racine.geometry("400x500")
+        self.VAC_racine.configure(bg="white")
 
     def creer_interface(self, rappel_1v1, rappel_facile, rappel_moyen, rappel_difficile):
         """
@@ -266,12 +266,12 @@ class VueAccueil:
             rappel_difficile (callable): Fonction appelée lors du clic sur "Difficile"
         """
         # Nettoyer la fenêtre
-        for widget in self.racine.winfo_children():
+        for widget in self.VAC_racine.winfo_children():
             widget.destroy()
 
         # Titre
         titre = tk.Label(
-            self.racine,
+            self.VAC_racine,
             text="PUISSANCE 4",
             font=("Arial", 28, "bold"),
             bg="white",
@@ -281,7 +281,7 @@ class VueAccueil:
 
         # Sous-titre
         sous_titre = tk.Label(
-            self.racine,
+            self.VAC_racine,
             text="Choisissez votre mode de jeu",
             font=("Arial", 14),
             bg="white",
@@ -291,7 +291,7 @@ class VueAccueil:
 
         # Bouton 1v1
         bouton_1v1 = tk.Button(
-            self.racine,
+            self.VAC_racine,
             text="Mode 1v1",
             font=("Arial", 16, "bold"),
             bg="#2196F3",
@@ -307,7 +307,7 @@ class VueAccueil:
 
         # Séparateur
         separateur = tk.Label(
-            self.racine,
+            self.VAC_racine,
             text="─── Contre l'IA ───",
             font=("Arial", 12),
             bg="white",
@@ -317,7 +317,7 @@ class VueAccueil:
 
         # Bouton Facile
         bouton_facile = tk.Button(
-            self.racine,
+            self.VAC_racine,
             text="Facile ★",
             font=("Arial", 16, "bold"),
             bg="#4CAF50",
@@ -333,7 +333,7 @@ class VueAccueil:
 
         # Bouton Moyen
         bouton_moyen = tk.Button(
-            self.racine,
+            self.VAC_racine,
             text="Moyen ★★",
             font=("Arial", 16, "bold"),
             bg="#FF9800",
@@ -349,7 +349,7 @@ class VueAccueil:
 
         # Bouton Difficile
         bouton_difficile = tk.Button(
-            self.racine,
+            self.VAC_racine,
             text="Difficile ★★★",
             font=("Arial", 16, "bold"),
             bg="#F44336",
@@ -381,9 +381,9 @@ class VueParametres:
             mode_ia: None si mode 1v1, sinon indique le mode IA
             difficulte (int): Niveau de difficulté de l'IA (1, 3 ou 5)
         """
-        self.racine = racine
-        self.mode_ia = mode_ia
-        self.difficulte = difficulte
+        self.VPA_racine = racine
+        self.VPA_mode_ia = mode_ia
+        self.VPA_difficulte = difficulte
 
     def creer_interface(self, rappel_jouer, rappel_retour):
         """
@@ -394,15 +394,15 @@ class VueParametres:
             rappel_retour (callable): Fonction appelée lors du clic sur "Retour au menu"
         """
         # Nettoyer la fenêtre
-        for widget in self.racine.winfo_children():
+        for widget in self.VPA_racine.winfo_children():
             widget.destroy()
 
-        self.racine.geometry("550x700")
-        self.racine.configure(bg="white")
+        self.VPA_racine.geometry("550x700")
+        self.VPA_racine.configure(bg="white")
 
         # Titre
         titre = tk.Label(
-            self.racine,
+            self.VPA_racine,
             text="PARAMÈTRES",
             font=("Arial", 28, "bold"),
             bg="white",
@@ -411,16 +411,16 @@ class VueParametres:
         titre.pack(pady=30)
 
         # Affichage du mode sélectionné
-        if self.mode_ia is None:
+        if self.VPA_mode_ia is None:
             texte_mode = "Mode 1v1"
             couleur_mode = "#000000"
         else:
-            texte_difficulte = {1: "Facile", 3: "Moyen", 5: "Difficile"}.get(self.difficulte, "Moyen")
+            texte_difficulte = {1: "Facile", 3: "Moyen", 5: "Difficile"}.get(self.VPA_difficulte, "Moyen")
             texte_mode = f"Contre l'IA - {texte_difficulte}"
             couleur_mode = "#000000"
 
         etiquette_mode = tk.Label(
-            self.racine,
+            self.VPA_racine,
             text=f"Mode de jeu : {texte_mode}",
             font=("Arial", 16, "bold"),
             bg=couleur_mode,
@@ -436,11 +436,11 @@ class VueParametres:
         variable_lignes = tk.StringVar(value="6")
         variable_colonnes = tk.StringVar(value="7")
         variable_alignes = tk.StringVar(value="4")
-        variable_premier = tk.StringVar(value="Joueur" if self.mode_ia else "Rouge")
+        variable_premier = tk.StringVar(value="Joueur" if self.VPA_mode_ia else "Rouge")
         variable_couleur_joueur = tk.StringVar(value="Rouge")
 
         # Frame pour les paramètres
-        cadre_parametres = tk.Frame(self.racine, bg="white")
+        cadre_parametres = tk.Frame(self.VPA_racine, bg="white")
         cadre_parametres.pack(pady=20)
 
         # Nombre de lignes
@@ -473,7 +473,7 @@ class VueParametres:
         # Qui commence en premier
         tk.Label(cadre_parametres, text="Qui commence :", font=("Arial", 12), bg="white").grid(row=3, column=0, padx=10,
                                                                                                pady=10, sticky="w")
-        if self.mode_ia is None:
+        if self.VPA_mode_ia is None:
             combo_premier = ttk.Combobox(cadre_parametres, textvariable=variable_premier, values=["Rouge", "Jaune"],
                                          width=15,
                                          font=("Arial", 12), state="readonly")
@@ -484,7 +484,7 @@ class VueParametres:
         combo_premier.grid(row=3, column=1, padx=10, pady=10)
 
         # Couleur du joueur (seulement en mode IA)
-        if self.mode_ia is not None:
+        if self.VPA_mode_ia is not None:
             tk.Label(cadre_parametres, text="Couleur joueur :", font=("Arial", 12), bg="white").grid(row=4, column=0,
                                                                                                      padx=10,
                                                                                                      pady=10,
@@ -516,7 +516,7 @@ class VueParametres:
 
         # Bouton Jouer
         bouton_jouer = tk.Button(
-            self.racine,
+            self.VPA_racine,
             text="JOUER",
             font=("Arial", 18, "bold"),
             bg="#4CAF50",
@@ -533,7 +533,7 @@ class VueParametres:
 
         # Bouton Retour
         bouton_retour = tk.Button(
-            self.racine,
+            self.VPA_racine,
             text="Retour au menu",
             font=("Arial", 14),
             bg="#757575",
@@ -563,8 +563,8 @@ class VueActions:
         Args:
             racine (tk.Tk): Fenêtre principale Tkinter
         """
-        self.racine = racine
-        self.cadre_actions = None
+        self.VAT_racine = racine
+        self.VAT_cadre_actions = None
 
     def creer_interface(self, rappel_annuler, rappel_refaire, rappel_rejouer, rappel_accueil):
         """
@@ -577,12 +577,12 @@ class VueActions:
             rappel_accueil (callable): Fonction appelée lors du clic sur "Home"
         """
         # Frame pour contenir les boutons d'action
-        self.cadre_actions = tk.Frame(self.racine, bg="white")
-        self.cadre_actions.pack(side=tk.LEFT, padx=20, pady=20, fill=tk.Y)
+        self.VAT_cadre_actions = tk.Frame(self.VAT_racine, bg="white")
+        self.VAT_cadre_actions.pack(side=tk.LEFT, padx=20, pady=20, fill=tk.Y)
 
         # Titre de la section
         titre_actions = tk.Label(
-            self.cadre_actions,
+            self.VAT_cadre_actions,
             text="ACTIONS",
             font=("Arial", 16, "bold"),
             bg="white",
@@ -591,7 +591,7 @@ class VueActions:
         titre_actions.pack(pady=10)
 
         # Frame pour les boutons Annuler et Refaire (côte à côte)
-        cadre_annuler_refaire = tk.Frame(self.cadre_actions, bg="white")
+        cadre_annuler_refaire = tk.Frame(self.VAT_cadre_actions, bg="white")
         cadre_annuler_refaire.pack(pady=10)
 
         # Bouton Annuler
@@ -628,7 +628,7 @@ class VueActions:
 
         # Bouton Rejouer
         bouton_rejouer = tk.Button(
-            self.cadre_actions,
+            self.VAT_cadre_actions,
             text="Rejouer",
             font=("Arial", 14, "bold"),
             bg="#4CAF50",
@@ -644,7 +644,7 @@ class VueActions:
 
         # Bouton Accueil
         bouton_accueil = tk.Button(
-            self.cadre_actions,
+            self.VAT_cadre_actions,
             text="Home",
             font=("Arial", 14, "bold"),
             bg="#757575",
