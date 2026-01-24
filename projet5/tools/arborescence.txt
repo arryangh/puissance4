@@ -1,6 +1,4 @@
 ../../projet2
-├── __pycache__
-│   └── logique.cpython-312.pyc
 ├── images
 │   ├── AUTOgenerate.py
 │   ├── bottomCELL.png

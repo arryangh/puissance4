@@ -91,9 +91,9 @@ class VueGrille:
         y_final = row_final * self.cell_size + self.cell_size // 2
 
         y = -self.cell_size // 2
-        velocity = 0
-        gravity = 3
-        damping = 0.2
+        VELOCITY = 0
+        GRAVITY = 3
+        DAMPING  = 0.2
         rayon = self.cell_size // 2
 
         pion = self.canvas.create_oval(
@@ -103,16 +103,16 @@ class VueGrille:
         )
 
         def animer():
-            nonlocal y, velocity
+            nonlocal y, VELOCITY
 
-            velocity += gravity
-            y += velocity
+            VELOCITY += GRAVITY
+            y += VELOCITY
 
             if y >= y_final:
                 y = y_final
-                velocity = -velocity * damping
+                VELOCITY = -VELOCITY * DAMPING
 
-                if abs(velocity) < 0.5:
+                if abs(VELOCITY) < 0.5:
                     self.canvas.coords(
                         pion,
                         x_center - rayon, y_final - rayon,
