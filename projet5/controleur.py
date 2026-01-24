@@ -128,7 +128,7 @@ class ControleurJeu:
         if resultat == 1:
             self.partie_terminee = True
             self.vue.effacer_effet_survol()
-            self.vue.afficher_message("🎉 Victoire du joueur ROUGE ! 🎉")
+            self.vue.afficher_message("Victoire du ROUGE!")
             print("\n" + "=" * 50)
             afficherMatrice(self.matrice)
             print("🎉 Victoire du joueur ROUGE ! 🎉")
@@ -136,7 +136,7 @@ class ControleurJeu:
         elif resultat == -1:
             self.partie_terminee = True
             self.vue.effacer_effet_survol()
-            self.vue.afficher_message("🎉 Victoire du joueur JAUNE ! 🎉")
+            self.vue.afficher_message("Victoire du JAUNE !")
             print("\n" + "=" * 50)
             afficherMatrice(self.matrice)
             print("🎉 Victoire du joueur JAUNE ! 🎉")
