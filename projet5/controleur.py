@@ -14,12 +14,13 @@ class ControleurJeu:
         self.mode_ia = mode_ia
         self.difficulte = difficulte
 
-        # Calcul dynamique de la taille des cellules
-        max_dim = max(rows, cols)
-        if max_dim <= 7:
-            self.cell_size = (2560 // 20)
-        else:
-            self.cell_size = int((1600 // 14) * (7 / max_dim))
+        # Calcul dynamique de la taille des cellules pour écrans 1920x1080
+        # Calculer la taille en fonction de la dimension la plus contraignante
+        max_rows_size = 690 / rows  # Hauteur max disponible (6 lignes * 115 = 690)
+        max_cols_size = 805 / cols  # Largeur max disponible (7 colonnes * 115 = 805)
+
+        # Prendre la plus petite des deux pour que tout rentre
+        self.cell_size = int(min(max_rows_size, max_cols_size, 115))  # Max 115px
 
         self.animation_en_cours = False
         self.partie_terminee = False
