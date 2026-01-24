@@ -154,6 +154,7 @@ class VueGrille:
     def rafraichir_grille(self, matrice):
         """Rafraîchit l'affichage de la grille à partir de la matrice"""
         self.canvas.delete("pion")
+        self.canvas.delete("message")  # Supprimer le message de victoire (
         self.pions_affiches.clear()
 
         for r in range(self.rows):
