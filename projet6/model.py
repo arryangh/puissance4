@@ -66,19 +66,19 @@ def undo_redo(matrice, action, mode_ia):
     else:  # si c'est pas le mode IA
         pas = 1
 
-    if action == "u":  # ANNULER
+    if action == "u":  # u = UNDO
         if indice_historique - pas >= 0:
             indice_historique -= pas
-        else:
-            return -1
+        else:  # indice_historique - pas < 0
+            return -1  # opération impossible
 
-    elif action == "r":  # REFAIRE
+    elif action == "r":  # r = REDO
         if indice_historique + pas < len(historique_matrices):
             indice_historique += pas
-        else:
-            return -1
+        else:  # indice_historique + pas >= len(historique_matrices)
+            return -1  # opération impossible
 
-    else:
+    else:  # dans tout autre cas
         return -1
 
     # Recharger la matrice depuis l'historique
@@ -101,7 +101,15 @@ def creer_matrice(lignes, colonnes):
     Returns:
         list: Une matrice (liste de listes) remplie de zéros
     """
-    return [[0 for _ in range(colonnes)] for _ in range(lignes)]
+    matrice = []
+    for iBoucle in range(lignes):
+        ligne = []
+        for jBoucle in range(colonnes):
+            ligne.append(0)
+        matrice.append(ligne)
+    return matrice
+
+
 
 
 def afficher_matrice(matrice):
@@ -245,7 +253,7 @@ def grille_pleine(matrice):
     """
     for colonne in range(len(matrice[0])):
         if matrice[0][colonne] == 0:
-            return False
+            return False  # si il y a un pion en haut de la colonne
     return True
 
 
@@ -273,33 +281,49 @@ def compter_sequences(matrice, joueur, longueur, nombre_alignes=4):
     # Vérifier horizontalement
     for ligne in range(lignes):
         for colonne in range(colonnes - nombre_alignes + 1):
-            sequence = [matrice[ligne][colonne + i] for i in range(nombre_alignes)]
-            if sequence.count(joueur) == longueur and sequence.count(0) == nombre_alignes - longueur and sequence.count(
-                    -joueur) == 0:
+            sequence = []
+            for iBoucle in range(nombre_alignes):
+                sequence.append(matrice[ligne][colonne + iBoucle])
+
+            if (sequence.count(joueur) == longueur and
+                    sequence.count(0) == nombre_alignes - longueur and
+                    sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier verticalement
     for ligne in range(lignes - nombre_alignes + 1):
         for colonne in range(colonnes):
-            sequence = [matrice[ligne + i][colonne] for i in range(nombre_alignes)]
-            if sequence.count(joueur) == longueur and sequence.count(0) == nombre_alignes - longueur and sequence.count(
-                    -joueur) == 0:
+            sequence = []
+            for iBoucle in range(nombre_alignes):
+                sequence.append(matrice[ligne + iBoucle][colonne])
+
+            if (sequence.count(joueur) == longueur and
+                    sequence.count(0) == nombre_alignes - longueur and
+                    sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier diagonale descendante (\)
     for ligne in range(lignes - nombre_alignes + 1):
         for colonne in range(colonnes - nombre_alignes + 1):
-            sequence = [matrice[ligne + i][colonne + i] for i in range(nombre_alignes)]
-            if sequence.count(joueur) == longueur and sequence.count(0) == nombre_alignes - longueur and sequence.count(
-                    -joueur) == 0:
+            sequence = []
+            for iBoucle in range(nombre_alignes):
+                sequence.append(matrice[ligne + iBoucle][colonne + iBoucle])
+
+            if (sequence.count(joueur) == longueur and
+                    sequence.count(0) == nombre_alignes - longueur and
+                    sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier diagonale montante (/)
     for ligne in range(nombre_alignes - 1, lignes):
         for colonne in range(colonnes - nombre_alignes + 1):
-            sequence = [matrice[ligne - i][colonne + i] for i in range(nombre_alignes)]
-            if sequence.count(joueur) == longueur and sequence.count(0) == nombre_alignes - longueur and sequence.count(
-                    -joueur) == 0:
+            sequence = []
+            for iBoucle in range(nombre_alignes):
+                sequence.append(matrice[ligne - iBoucle][colonne + iBoucle])
+
+            if (sequence.count(joueur) == longueur and
+                    sequence.count(0) == nombre_alignes - longueur and
+                    sequence.count(-joueur) == 0):
                 compteur += 1
 
     return compteur
@@ -307,11 +331,11 @@ def compter_sequences(matrice, joueur, longueur, nombre_alignes=4):
 
 def evaluer_position(matrice, joueur_ia, nombre_alignes=4):
     """
-    Évalue la qualité d'une position pour l'IA.
+    Évalue la qualité d'une position pour le minmax.
 
     Utilise une fonction d'évaluation heuristique qui prend en compte:
     - Les victoires immédiates (score maximal/minimal)
-    - Le nombre de séquences de 3 et 2 pions alignés
+    - Le nombre de séquences de 2 et 3 pion aligné
     - Le contrôle du centre (stratégiquement important)
     - Les menaces adverses (fortement pénalisées)
 
@@ -341,8 +365,8 @@ def evaluer_position(matrice, joueur_ia, nombre_alignes=4):
     adversaire_deux = compter_sequences(matrice, -joueur_ia, 2, nombre_alignes)
 
     # Pondération : bloquer 3 alignés adverses est CRITIQUE
-    score += ia_trois * 100  # 3 pions alignés IA = très bon
-    score += ia_deux * 10  # 2 pions alignés IA = bon
+    score += ia_trois * 100  # 3 pions alignés IA = très bien
+    score += ia_deux * 10  # 2 pions alignés IA = bien
     score -= adversaire_trois * 150  # 3 pions alignés adversaire = URGENT à bloquer
     score -= adversaire_deux * 15  # 2 pions alignés adversaire = à surveiller
 
@@ -383,7 +407,7 @@ def minimax(matrice, profondeur, est_maximisant, joueur_ia, nombre_alignes=4):
 
     if est_maximisant:
         # Tour de l'IA (maximise)
-        valeur = float('-inf')
+        valeur = float('-inf')  # - infinie
         for coup in coups:
             nouvelle_matrice = copy.deepcopy(matrice)
             ajouter_pion(nouvelle_matrice, joueur_ia, coup)
@@ -392,7 +416,7 @@ def minimax(matrice, profondeur, est_maximisant, joueur_ia, nombre_alignes=4):
         return valeur
     else:
         # Tour de l'adversaire (minimise)
-        valeur = float('inf')
+        valeur = float('inf') # + infinie
         for coup in coups:
             nouvelle_matrice = copy.deepcopy(matrice)
             ajouter_pion(nouvelle_matrice, -joueur_ia, coup)
@@ -421,7 +445,7 @@ def meilleur_coup_ia(matrice, joueur_ia, profondeur=5, nombre_alignes=4):
     """
     coups = coups_possibles(matrice)
 
-    if not coups:
+    if not coups: # si pas de coups à jouer
         return None
 
     # PRIORITÉ 1 : Vérifier si l'IA peut gagner immédiatement
@@ -429,14 +453,14 @@ def meilleur_coup_ia(matrice, joueur_ia, profondeur=5, nombre_alignes=4):
         matrice_temporaire = copy.deepcopy(matrice)
         ajouter_pion(matrice_temporaire, joueur_ia, coup)
         if verifier_victoire(matrice_temporaire, nombre_alignes) == joueur_ia:
-            return coup  # Gagner immédiatement !
+            return coup  # renvoie le coup gagnant imédiatement
 
     # PRIORITÉ 2 : Vérifier si l'adversaire peut gagner (BLOQUER directement)
     for coup in coups:
         matrice_temporaire = copy.deepcopy(matrice)
         ajouter_pion(matrice_temporaire, -joueur_ia, coup)
         if verifier_victoire(matrice_temporaire, nombre_alignes) == -joueur_ia:
-            return coup  # Bloquer la victoire adverse !
+            return coup  # renvoie le coup blockant imédiatement
 
     # PRIORITÉ 3 : Utiliser Minimax pour trouver le meilleur coup stratégique
     meilleur_coup = coups[0]

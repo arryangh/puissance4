@@ -5,15 +5,15 @@ from PIL import Image, ImageTk
 
 class VueGrille:
     """
-    Vue pour afficher et gérer l'interface graphique de la grille de jeu Puissance 4.
+    Vue (=Interface graphique) pour afficher et gérer l'interface graphique de la grille de jeu puissance 4.
 
-    Gère l'affichage de la grille, l'animation des pions, les effets de survol
-    et les messages de fin de partie.
+    Gère l'affichage de la grille, l'animation des pions qui tombent dans la grille, les effets de survol
+    et les messages de victoire de fin de partie.
     """
 
     def __init__(self, racine, lignes, colonnes, taille_cellule):
         """
-        Initialise la vue de la grille de jeu.
+        Initialise la vue de la grille de jeu (en fonction des dimensions de la grille)
 
         Args:
             racine (tk.Tk): Fenêtre principale Tkinter
@@ -35,7 +35,7 @@ class VueGrille:
             -1: "#FFD700"  # Jaune pour joueur -1
         }
 
-        # Chargement et redimensionnement des images
+        # Chargement et redimensionnement des images (les images peuvent être générées par le programme "AUTOgenerate.py"
         self.img_normale = Image.open("../affichage/exportAuto/normalCELL.png")
         self.img_bas = Image.open("../affichage/exportAuto/bottomCELL.png")
 
@@ -67,8 +67,8 @@ class VueGrille:
         """
         Affiche toutes les cellules de la grille avec les images appropriées.
 
-        Utilise une image différente pour la ligne du bas (bottomCELL) et une image
-        normale pour les autres lignes.
+        Utilise une image différente pour la ligne du bas (bottomCELL) (avec le trait noir en bas du carré)
+        et une image normale pour les autres lignes. (sans le trait noi en bas du carré)
         """
         self.canvas.delete("grille")
 
@@ -86,7 +86,7 @@ class VueGrille:
 
     def afficher_effet_survol(self, colonne):
         """
-        Affiche un effet d'ombre grise sur la colonne survolée par la souris.
+        Affiche un effet d'ombre grise (hachuré) sur la colonne survolée par la souris.
 
         Args:
             colonne (int): L'indice de la colonne à surligner
@@ -140,7 +140,19 @@ class VueGrille:
         )
 
         def animer():
-            """Fonction interne qui gère chaque frame de l'animation."""
+            """
+            Sous-fonction récursive qui gère chaque frame de l'animation.
+
+            Appelée toutes les 16ms (~60 FPS) pour mettre à jour la position du pion.
+            Simule la physique avec:
+            - Accélération gravitationnelle (GRAVITE)
+            - Rebond avec perte d'énergie (AMORTISSEMENT)
+            - Arrêt quand la vitesse devient négligeable (< 0.5)
+
+            Variables nonlocal modifiées:
+                y (int): Position verticale actuelle du pion
+                VELOCITE (int): Vitesse de descente actuelle (augmente avec la gravité)
+            """
             nonlocal y, VELOCITE
 
             VELOCITE += GRAVITE
