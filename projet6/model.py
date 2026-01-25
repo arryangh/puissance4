@@ -19,7 +19,7 @@ def reinitialiser_historique(matrice):
     global historique_matrices, indice_historique
     historique_matrices = []  # une liste de matrice (dimension 3)
     indice_historique = -1
-    sauvegarder_etat(matrice) # mettre la première matrice à ce moment là
+    sauvegarder_etat(matrice)  # mettre la première matrice à ce moment là
 
 
 def sauvegarder_etat(matrice):
@@ -114,7 +114,7 @@ def creer_matrice(lignes, colonnes):
 
 def afficher_matrice(matrice):
     """
-    Affiche la matrice de jeu dans la console avec des emojis.
+    Affiche la matrice de jeu dans la console avec des emojji.
 
     Légende:
     - 🔴 : Joueur 1 (valeur 1)
@@ -145,7 +145,7 @@ def afficher_matrice(matrice):
 
 def ajouter_pion(matrice, joueur, colonne):
     """
-    Ajoute un pion du joueur dans la colonne spécifiée.
+    Ajoute un pion du joueur (1 ou -1) dans la colonne donné en paramètre.
 
     Le pion tombe jusqu'à la position la plus basse disponible dans la colonne,
     simulant la gravité.
@@ -160,10 +160,11 @@ def ajouter_pion(matrice, joueur, colonne):
     """
     lignes = len(matrice)
 
-    if colonne < 0 or colonne >= len(matrice[0]):
+    if colonne < 0 or colonne >= len(matrice[0]):  # gestion d'erreur de numéro de colonne
+        print("Numero de colonne en dehors de l'interval autorisé.")
         return -1
 
-    for ligne in range(lignes - 1, -1, -1):
+    for ligne in range(lignes - 1, -1, -1):  # boucle inverse pour placer le pion le plus bas possible
         if matrice[ligne][colonne] == 0:
             matrice[ligne][colonne] = joueur
             return 0
@@ -175,55 +176,79 @@ def verifier_victoire(matrice, nombre_alignes=4):
     """
     Vérifie s'il y a un gagnant dans la partie.
 
-    Examine toutes les directions possibles (horizontal, vertical, diagonales)
-    pour trouver une séquence du nombre requis de pions alignés.
+    Examine toutes les directions possibles (horizontal, vertical, diagonale et antidiagnoale)
+    pour trouver une séquence du nombre requis de pions alignés (4 par défaut mais peut changer).
 
     Args:
         matrice (list): La matrice de jeu à vérifier
-        nombre_alignes (int): Nombre de pions alignés nécessaires pour gagner (défaut: 4)
+        nombre_alignes (int): Nombre de pions alignés nécessaires pour gagner (par défaut: 4)
 
     Returns:
         int: 1 si le joueur 1 gagne, -1 si le joueur -1 gagne, 0 si pas de gagnant
     """
-    lignes = len(matrice)
-    colonnes = len(matrice[0])
+    lignes = len(matrice)  # nombre de lignes
+    colonnes = len(matrice[0]) # nombre de colonnes
 
     # Vérifier horizontalement
     for ligne in range(lignes):
         for colonne in range(colonnes - nombre_alignes + 1):
-            if matrice[ligne][colonne] != 0:
-                if all(matrice[ligne][colonne + i] == matrice[ligne][colonne] for i in range(nombre_alignes)):
-                    return matrice[ligne][colonne]
+            if matrice[ligne][colonne] != 0:  # continuer la vérification si pas de cellule sans pion (pas de cellule vide)
+                alignement_horizontal = True  # alignement de pion (on sait pas encore si pions identiques)
+                for i in range(nombre_alignes):  # # vérifier si les pions identiques sont de même "couleur"
+                    if matrice[ligne][colonne + i] != matrice[ligne][colonne]:
+                        alignement_horizontal = False
+                        break
+
+                if alignement_horizontal:
+                    return matrice[ligne][colonne]  # renvoyer le numéro du pion si n pion alignées
 
     # Vérifier verticalement
     for ligne in range(lignes - nombre_alignes + 1):
         for colonne in range(colonnes):
-            if matrice[ligne][colonne] != 0:
-                if all(matrice[ligne + i][colonne] == matrice[ligne][colonne] for i in range(nombre_alignes)):
-                    return matrice[ligne][colonne]
+            if matrice[ligne][colonne] != 0:  # continuer la vérification si pas de cellule sans pion (pas de cellule vide)
+                alignement_vertical = True  # alignement de pion (on sait pas encore si pions identiques)
+                for i in range(nombre_alignes):  # vérifier si les pions identiques sont de même "couleur"
+                    if matrice[ligne + i][colonne] != matrice[ligne][colonne]:
+                        alignement_vertical = False
+                        break
+
+                if alignement_vertical:
+                    return matrice[ligne][colonne]  # renvoyer le numéro du pion si n pion alignées
 
     # Vérifier diagonale descendante (\)
     for ligne in range(lignes - nombre_alignes + 1):
         for colonne in range(colonnes - nombre_alignes + 1):
-            if matrice[ligne][colonne] != 0:
-                if all(matrice[ligne + i][colonne + i] == matrice[ligne][colonne] for i in range(nombre_alignes)):
-                    return matrice[ligne][colonne]
+            if matrice[ligne][colonne] != 0:  # continuer la vérification si pas de cellule sans pion (pas de cellule vide)
+                alignement_diag_desc = True  # alignement de pion (on sait pas encore si pions identiques)
+                for i in range(nombre_alignes):  # vérifier si les pions identiques sont de même "couleur"
+                    if matrice[ligne + i][colonne + i] != matrice[ligne][colonne]:
+                        alignement_diag_desc = False
+                        break
+
+                if alignement_diag_desc:
+                    return matrice[ligne][colonne]  # renvoyer le numéro du pion si n pion alignées
 
     # Vérifier diagonale montante (/)
     for ligne in range(nombre_alignes - 1, lignes):
         for colonne in range(colonnes - nombre_alignes + 1):
-            if matrice[ligne][colonne] != 0:
-                if all(matrice[ligne - i][colonne + i] == matrice[ligne][colonne] for i in range(nombre_alignes)):
-                    return matrice[ligne][colonne]
+            if matrice[ligne][colonne] != 0:  # continuer la vérification si pas de cellule sans pion (pas de cellule vide)
+                alignement_diag_mont = True  # alignement de pion (on sait pas encore si pions identiques)
+                for i in range(nombre_alignes):  # vérifier si les pions identiques sont de même "couleur"
+                    if matrice[ligne - i][colonne + i] != matrice[ligne][colonne]:
+                        alignement_diag_mont = False
+                        break
 
-    return 0
+                if alignement_diag_mont:
+                    return matrice[ligne][colonne]  # renvoyer le numéro du pion si n pion alignées
+
+    return 0  # si après toutes les vérifications et boucles il n'y a pas n pions aligné de même couleur (cas le plus récurant)
 
 
 def coups_possibles(matrice):
     """
     Retourne la liste des colonnes où il est possible de jouer.
 
-    Une colonne est jouable si sa case du haut (ligne 0) est vide.
+    Une colonne est jouable si sa case du haut (ligne 0) est vide. (la cellule la plus haute de la colonne)
 
     Args:
         matrice (list): La matrice de jeu
@@ -231,12 +256,12 @@ def coups_possibles(matrice):
     Returns:
         list: Liste des indices de colonnes disponibles
     """
-    colonnes = len(matrice[0])
+    colonnes = len(matrice[0])  # nombre de colonne
     coups = []
 
     for colonne in range(colonnes):
-        if matrice[0][colonne] == 0:
-            coups.append(colonne)
+        if matrice[0][colonne] == 0:  # si l'élèment le plus haut de la colonne est vide (il reste des places encore)
+            coups.append(colonne)  # on ajoute le numéro de colonne à la liste d'entier "colonnes"
 
     return coups
 
@@ -253,17 +278,18 @@ def grille_pleine(matrice):
     """
     for colonne in range(len(matrice[0])):
         if matrice[0][colonne] == 0:
-            return False  # si il y a un pion en haut de la colonne
-    return True
+            return False  # si il y a un pion en haut d'au moins une colonne
+        
+    return True  # si toutes les colonnes sont remplies
 
 
 def compter_sequences(matrice, joueur, longueur, nombre_alignes=4):
     """
-    Compte le nombre de séquences d'une certaine longueur pour un joueur.
+    Compte le nombre de séquences d'une certaine longueur pour un joueur. (pour évaluer la dangeureusité d'une position)
 
     Une séquence valide contient exactement 'longueur' pions du joueur,
     le reste étant des cases vides (0), et aucun pion adverse.
-    Cela permet d'identifier les opportunités encore ouvertes.
+    ça permet d'identifier les opportunités encore ouvertes. (les bons coups à jouer)
 
     Args:
         matrice (list): La matrice de jeu
@@ -279,48 +305,62 @@ def compter_sequences(matrice, joueur, longueur, nombre_alignes=4):
     compteur = 0
 
     # Vérifier horizontalement
-    for ligne in range(lignes):
-        for colonne in range(colonnes - nombre_alignes + 1):
-            sequence = []
+    for ligne in range(lignes): # Pour chaque ligne de la matrice
+        for colonne in range(colonnes - nombre_alignes + 1): # Pour chaque position de départ possible pour une fenêtre horizontale de taille nombre_alignes
+            sequence = [] # Récupérer tous les éléments horizontales
             for iBoucle in range(nombre_alignes):
                 sequence.append(matrice[ligne][colonne + iBoucle])
 
+            # Vérifier les conditions : exactement 'longueur' pions du joueur et le reste des cases vides, et aucun pion adverse
             if (sequence.count(joueur) == longueur and
                     sequence.count(0) == nombre_alignes - longueur and
                     sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier verticalement
+    # Pour chaque position de départ possible pour une fenêtre verticale de taille nombre_alignes
     for ligne in range(lignes - nombre_alignes + 1):
+        # Pour chaque colonne de la matrice
         for colonne in range(colonnes):
             sequence = []
+            # Récupérer tous les éléments dans la fenêtre verticale
             for iBoucle in range(nombre_alignes):
                 sequence.append(matrice[ligne + iBoucle][colonne])
 
+            # Vérifier les conditions: exactement 'longueur' pions du joueur,
+            # le reste des cases vides, et aucun pion adverse
             if (sequence.count(joueur) == longueur and
                     sequence.count(0) == nombre_alignes - longueur and
                     sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier diagonale descendante (\)
+    # Pour chaque position de départ possible pour une fenêtre diagonale descendante de taille nombre_alignes
     for ligne in range(lignes - nombre_alignes + 1):
         for colonne in range(colonnes - nombre_alignes + 1):
             sequence = []
+            # Récupérer tous les éléments dans la fenêtre diagonale descendante
             for iBoucle in range(nombre_alignes):
                 sequence.append(matrice[ligne + iBoucle][colonne + iBoucle])
 
+            # Vérifier les conditions: exactement 'longueur' pions du joueur,
+            # le reste des cases vides, et aucun pion adverse
             if (sequence.count(joueur) == longueur and
                     sequence.count(0) == nombre_alignes - longueur and
                     sequence.count(-joueur) == 0):
                 compteur += 1
 
     # Vérifier diagonale montante (/)
+    # Pour chaque position de départ possible pour une fenêtre diagonale montante de taille nombre_alignes
     for ligne in range(nombre_alignes - 1, lignes):
         for colonne in range(colonnes - nombre_alignes + 1):
             sequence = []
+            # Récupérer tous les éléments dans la fenêtre diagonale montante
             for iBoucle in range(nombre_alignes):
                 sequence.append(matrice[ligne - iBoucle][colonne + iBoucle])
 
+            # Vérifier les conditions: exactement 'longueur' pions du joueur,
+            # le reste des cases vides, et aucun pion adverse
             if (sequence.count(joueur) == longueur and
                     sequence.count(0) == nombre_alignes - longueur and
                     sequence.count(-joueur) == 0):
@@ -352,7 +392,7 @@ def evaluer_position(matrice, joueur_ia, nombre_alignes=4):
     if victoire == joueur_ia:
         return 10000  # Victoire de l'IA = excellent
     elif victoire == -joueur_ia:
-        return -10000  # Victoire de l'adversaire = catastrophique
+        return -10000  # Victoire de l'adversair = catastrophique
 
     score = 0
 
@@ -360,15 +400,15 @@ def evaluer_position(matrice, joueur_ia, nombre_alignes=4):
     ia_trois = compter_sequences(matrice, joueur_ia, 3, nombre_alignes)
     ia_deux = compter_sequences(matrice, joueur_ia, 2, nombre_alignes)
 
-    # Compter les séquences pour l'adversaire
+    # Compter les séquences pour l'adversair
     adversaire_trois = compter_sequences(matrice, -joueur_ia, 3, nombre_alignes)
     adversaire_deux = compter_sequences(matrice, -joueur_ia, 2, nombre_alignes)
 
     # Pondération : bloquer 3 alignés adverses est CRITIQUE
     score += ia_trois * 100  # 3 pions alignés IA = très bien
     score += ia_deux * 10  # 2 pions alignés IA = bien
-    score -= adversaire_trois * 150  # 3 pions alignés adversaire = URGENT à bloquer
-    score -= adversaire_deux * 15  # 2 pions alignés adversaire = à surveiller
+    score -= adversaire_trois * 150  # 3 pions alignés adversair = URGENT à bloquer
+    score -= adversaire_deux * 15  # 2 pions alignés adversair = à surveiller
 
     # Bonus pour jouer au centre (colonnes centrales sont stratégiques)
     colonnes = len(matrice[0])
@@ -383,15 +423,16 @@ def evaluer_position(matrice, joueur_ia, nombre_alignes=4):
 def minimax(matrice, profondeur, est_maximisant, joueur_ia, nombre_alignes=4):
     """
     Implémente l'algorithme Minimax pour trouver le meilleur coup.
+    Algorithme obligatoire de M.BILLAUT
 
-    Explore récursivement l'arbre des possibilités jusqu'à une certaine profondeur
-    ou jusqu'à une fin de partie. L'IA maximise son score tandis que l'adversaire
+    Explore récursivement l'arbre des possibilités jusqu'à une certaine profondeure
+    ou jusqu'à une fin de partie. L'IA maximise son score tandis que l'adversair
     le minimise.
 
     Args:
         matrice (list): État actuel du jeu
-        profondeur (int): Profondeur restante à explorer (0 = arrêt)
-        est_maximisant (bool): True si c'est le tour de l'IA, False pour l'adversaire
+        profondeur (int): Profondeur restant à explorer (0 = arrêt)
+        est_maximisant (bool): True si c'est le tour de l'IA, False pour l'adversair
         joueur_ia (int): 1 ou -1 selon qui est l'IA
         nombre_alignes (int): Nombre de pions alignés pour gagner (défaut: 4)
 
@@ -413,15 +454,19 @@ def minimax(matrice, profondeur, est_maximisant, joueur_ia, nombre_alignes=4):
             ajouter_pion(nouvelle_matrice, joueur_ia, coup)
             evaluation = minimax(nouvelle_matrice, profondeur - 1, False, joueur_ia, nombre_alignes)
             valeur = max(valeur, evaluation)
+
         return valeur
+
+
     else:
-        # Tour de l'adversaire (minimise)
+        # Tour de l'adversair (minimise)
         valeur = float('inf') # + infinie
         for coup in coups:
             nouvelle_matrice = copy.deepcopy(matrice)
             ajouter_pion(nouvelle_matrice, -joueur_ia, coup)
             evaluation = minimax(nouvelle_matrice, profondeur - 1, True, joueur_ia, nombre_alignes)
             valeur = min(valeur, evaluation)
+
         return valeur
 
 
@@ -452,13 +497,15 @@ def meilleur_coup_ia(matrice, joueur_ia, profondeur=5, nombre_alignes=4):
     for coup in coups:
         matrice_temporaire = copy.deepcopy(matrice)
         ajouter_pion(matrice_temporaire, joueur_ia, coup)
+
         if verifier_victoire(matrice_temporaire, nombre_alignes) == joueur_ia:
             return coup  # renvoie le coup gagnant imédiatement
 
-    # PRIORITÉ 2 : Vérifier si l'adversaire peut gagner (BLOQUER directement)
+    # PRIORITÉ 2 : Vérifier si l'adversair peut gagner (BLOQUER directement)
     for coup in coups:
         matrice_temporaire = copy.deepcopy(matrice)
         ajouter_pion(matrice_temporaire, -joueur_ia, coup)
+
         if verifier_victoire(matrice_temporaire, nombre_alignes) == -joueur_ia:
             return coup  # renvoie le coup blockant imédiatement
 

@@ -432,7 +432,7 @@ class VueParametres:
         )
         etiquette_mode.pack(pady=20)
 
-        # Variables pour les paramètres
+        # Variables par défaut pour les paramètres
         variable_lignes = tk.StringVar(value="6")
         variable_colonnes = tk.StringVar(value="7")
         variable_alignes = tk.StringVar(value="4")
@@ -444,60 +444,38 @@ class VueParametres:
         cadre_parametres.pack(pady=20)
 
         # Nombre de lignes
-        tk.Label(cadre_parametres, text="Nombre de lignes :", font=("Arial", 12), bg="white").grid(row=0, column=0,
-                                                                                                   padx=10,
-                                                                                                   pady=10, sticky="w")
-        combo_lignes = ttk.Combobox(cadre_parametres, textvariable=variable_lignes, values=list(range(4, 11)), width=15,
+        tk.Label(cadre_parametres, text="Nombre de lignes :", font=("Arial", 12), bg="white").grid(row=0, column=0,padx=10,pady=10, sticky="w")
+        combo_lignes = ttk.Combobox(cadre_parametres , textvariable=variable_lignes, values =list(range(4, 11)), width=15,
                                     font=("Arial", 12), state="readonly")
         combo_lignes.grid(row=0, column=1, padx=10, pady=10)
 
         # Nombre de colonnes
-        tk.Label(cadre_parametres, text="Nombre de colonnes :", font=("Arial", 12), bg="white").grid(row=1, column=0,
-                                                                                                     padx=10,
-                                                                                                     pady=10,
-                                                                                                     sticky="w")
-        combo_colonnes = ttk.Combobox(cadre_parametres, textvariable=variable_colonnes, values=list(range(4, 11)),
-                                      width=15,
-                                      font=("Arial", 12), state="readonly")
+        tk.Label(cadre_parametres, text="Nombre de colonnes :", font=("Arial", 12), bg="white").grid(row=1, column=0,padx=10,pady=10,sticky="w")
+        combo_colonnes = ttk.Combobox(cadre_parametres, textvariable=variable_colonnes, values = list(range(4, 11)),width=15,font=("Arial", 12), state="readonly")
         combo_colonnes.grid(row=1, column=1, padx=10, pady=10)
 
         # Nombre de pions alignés
-        tk.Label(cadre_parametres, text="Pions à aligner :", font=("Arial", 12), bg="white").grid(row=2, column=0,
-                                                                                                  padx=10,
-                                                                                                  pady=10, sticky="w")
-        combo_alignes = ttk.Combobox(cadre_parametres, textvariable=variable_alignes, values=list(range(3, 7)),
-                                     width=15,
-                                     font=("Arial", 12), state="readonly")
+        tk.Label(cadre_parametres, text="Pions à aligner :" , font=("Arial", 12), bg="white").grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        combo_alignes = ttk.Combobox(cadre_parametres, textvariable=variable_alignes, values =list(range(3, 7)), width=15, font=("Arial", 12), state="readonly")
         combo_alignes.grid(row=2, column=1, padx=10, pady=10)
 
         # Qui commence en premier
-        tk.Label(cadre_parametres, text="Qui commence :", font=("Arial", 12), bg="white").grid(row=3, column=0, padx=10,
-                                                                                               pady=10, sticky="w")
+        tk.Label(cadre_parametres, text="Qui commence :", font=("Arial", 12), bg="white").grid(row=3, column=0, padx=10, pady=10, sticky="w")
         if self.VPA_mode_ia is None:
-            combo_premier = ttk.Combobox(cadre_parametres, textvariable=variable_premier, values=["Rouge", "Jaune"],
-                                         width=15,
-                                         font=("Arial", 12), state="readonly")
+            combo_premier = ttk.Combobox(cadre_parametres, textvariable=variable_premier, values=["Rouge", "Jaune"],width=15, font=("Arial", 12), state="readonly")
         else:
-            combo_premier = ttk.Combobox(cadre_parametres, textvariable=variable_premier, values=["Joueur", "IA"],
-                                         width=15,
-                                         font=("Arial", 12), state="readonly")
+            combo_premier = ttk.Combobox(cadre_parametres , textvariable=variable_premier, values=["Joueur", "IA"],width=15,font=("Arial", 12), state="readonly")
+
         combo_premier.grid(row=3, column=1, padx=10, pady=10)
 
         # Couleur du joueur (seulement en mode IA)
         if self.VPA_mode_ia is not None:
-            tk.Label(cadre_parametres, text="Couleur joueur :", font=("Arial", 12), bg="white").grid(row=4, column=0,
-                                                                                                     padx=10,
-                                                                                                     pady=10,
-                                                                                                     sticky="w")
-            combo_couleur = ttk.Combobox(cadre_parametres, textvariable=variable_couleur_joueur,
-                                         values=["Rouge", "Jaune"], width=15,
-                                         font=("Arial", 12), state="readonly")
+            tk.Label(cadre_parametres, text="Couleur joueur :", font=("Arial", 12), bg="white").grid(row=4, column=0,padx=10,pady=10,sticky="w")
+            combo_couleur = ttk.Combobox(cadre_parametres , textvariable=variable_couleur_joueur,values=["Rouge", "Jaune"], width=15,font=("Arial", 12), state="readonly")
             combo_couleur.grid(row=4, column=1, padx=10, pady=10)
 
             # Label pour afficher la couleur de l'IA
-            etiquette_couleur_ia = tk.Label(cadre_parametres, text="Couleur IA : Jaune⬤", font=("Arial", 12, "italic"),
-                                            bg="white",
-                                            fg="#FFD700")
+            etiquette_couleur_ia = tk.Label(cadre_parametres, text="Couleur IA : Jaune⬤", font=("Arial", 12, "italic"),bg="white",fg="#FFD700")
             etiquette_couleur_ia.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
             def mettre_a_jour_couleur_ia(*args):
@@ -510,7 +488,7 @@ class VueParametres:
                 if variable_couleur_joueur.get() == "Rouge":
                     etiquette_couleur_ia.config(text="Couleur IA : Jaune⬤", fg="#FFD700")
                 else:
-                    etiquette_couleur_ia.config(text="Couleur IA : Rouge⬤", fg="#FF4444")
+                    etiquette_couleur_ia.config(text="Couleur IA : Rouge⬤" , fg="#FF4444")
 
             variable_couleur_joueur.trace("w", mettre_a_jour_couleur_ia)
 
@@ -550,7 +528,7 @@ class VueParametres:
 
 class VueActions:
     """
-    Vue pour les boutons d'action affichés à côté de la grille de jeu.
+    Vue pour les boutons d'action affiché à côté de la grille de jeu.
 
     Fournit des boutons pour annuler/refaire des coups, rejouer une partie
     ou retourner au menu principal.
@@ -558,7 +536,7 @@ class VueActions:
 
     def __init__(self, racine):
         """
-        Initialise la vue des actions.
+        Initialise la vue des action.
 
         Args:
             racine (tk.Tk): Fenêtre principale Tkinter

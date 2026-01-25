@@ -30,8 +30,8 @@ class ControleurJeu:
         self.CTJ_mode_ia = mode_ia
         self.CTJ_difficulte = difficulte
 
-        # Calcul dynamique de la taille des cellules pour écrans 1920x1080
-        # Calculer la taille en fonction de la dimension la plus contraignante
+        # Calcul de la taille des cellules pour écrans 1920x1080
+        # Calculer la taille en fonction de la dimension la plus contraignante (pour que ça marche partout)
         taille_max_lignes = 690 / lignes  # Hauteur max disponible (6 lignes * 115 = 690)
         taille_max_colonnes = 805 / colonnes  # Largeur max disponible (7 colonnes * 115 = 805)
 
@@ -50,9 +50,9 @@ class ControleurJeu:
         self.CTJ_vue = VueGrille(racine, lignes, colonnes, self.CTJ_taille_cellule)
 
         # Binding des événements souris
-        self.CTJ_vue.canvas.bind("<Motion>", self.sur_mouvement_souris)
-        self.CTJ_vue.canvas.bind("<Button-1>", self.sur_clic)
-        self.CTJ_vue.canvas.bind("<Leave>", self.sur_sortie_souris)
+        self.CTJ_vue.VGR_canvas.bind("<Motion>", self.sur_mouvement_souris)
+        self.CTJ_vue.VGR_canvas.bind("<Button-1>", self.sur_clic)
+        self.CTJ_vue.VGR_canvas.bind("<Leave>", self.sur_sortie_souris)
 
     def sur_mouvement_souris(self, evenement):
         """
@@ -74,7 +74,7 @@ class ControleurJeu:
         colonne = evenement.x // self.CTJ_taille_cellule
 
         if 0 <= colonne < self.CTJ_colonnes:
-            if colonne != self.CTJ_vue.colonne_survol:
+            if colonne != self.CTJ_vue.VGR_colonne_survol:
                 self.CTJ_vue.afficher_effet_survol(colonne)
         else:
             self.CTJ_vue.effacer_effet_survol()
@@ -202,16 +202,18 @@ class ControleurJeu:
             self.CTJ_vue.afficher_message("Victoire du ROUGE!")
             print("\n" + "=" * 50)
             afficher_matrice(self.CTJ_matrice)
-            print("🎉 Victoire du joueur ROUGE ! 🎉")
+            print("Victoire du joueur ROUGE !")
             print("=" * 50)
+
         elif resultat == -1:
             self.CTJ_partie_terminee = True
             self.CTJ_vue.effacer_effet_survol()
             self.CTJ_vue.afficher_message("Victoire du JAUNE !")
             print("\n" + "=" * 50)
             afficher_matrice(self.CTJ_matrice)
-            print("🎉 Victoire du joueur JAUNE ! 🎉")
+            print("Victoire du joueur JAUNE !")
             print("=" * 50)
+
         elif self.grille_pleine():
             self.CTJ_partie_terminee = True
             self.CTJ_vue.effacer_effet_survol()
@@ -220,6 +222,7 @@ class ControleurJeu:
             afficher_matrice(self.CTJ_matrice)
             print("Match nul !")
             print("=" * 50)
+
         else:
             self.CTJ_joueur_actuel *= -1
 
