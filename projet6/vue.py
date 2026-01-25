@@ -11,106 +11,106 @@ class VueGrille:
     et les messages de victoire de fin de partie.
     """
 
-    def __init__(self, racine, lignes, colonnes, taille_cellule):
+    def __init__(self, VGRracine, iLignes, iColonnes, iTaille_cellule):
         """
         Initialise la vue de la grille de jeu (en fonction des dimensions de la grille)
 
         Args:
-            racine (tk.Tk): Fenêtre principale Tkinter
-            lignes (int): Nombre de lignes de la grille
-            colonnes (int): Nombre de colonnes de la grille
-            taille_cellule (int): Taille en pixels d'une cellule
+            VGRracine (tk.Tk): Fenêtre principale Tkinter
+            iLignes (int): Nombre de lignes de la grille
+            iColonnes (int): Nombre de colonnes de la grille
+            iTaille_cellule (int): Taille en pixels d'une cellule
         """
-        self.VGR_racine = racine
-        self.VGR_lignes = lignes
-        self.VGR_colonnes = colonnes
-        self.VGR_taille_cellule = taille_cellule
+        self.VGR_racine = VGRracine
+        self.iVGR_lignes = iLignes
+        self.iVGR_colonnes = iColonnes
+        self.iTCJ_taille_cellule = iTaille_cellule
 
         self.VGR_colonne_survol = None
-        self.VGR_pions_affiches = {}
+        self.lVGR_pions_affiches = {}
 
         # Couleurs des joueurs
-        self.VGR_couleurs = {
+        self.dVGR_couleurs = {
             1: "#FF4444",  # Rouge pour joueur 1
             -1: "#FFD700"  # Jaune pour joueur -1
         }
 
-        # Chargement et redimensionnement des images (les images peuvent être générées par le programme "AUTOgenerate.py"
+        # Chargement et redimensionnement des images 
         self.VGR_img_normale = Image.open("../affichage/exportAuto/normalCELL.png")
         self.VGR_img_bas = Image.open("../affichage/exportAuto/bottomCELL.png")
 
-        self.VGR_img_normale = self.VGR_img_normale.resize((self.VGR_taille_cellule, self.VGR_taille_cellule), Image.LANCZOS)
-        self.VGR_img_bas = self.VGR_img_bas.resize((self.VGR_taille_cellule, self.VGR_taille_cellule), Image.LANCZOS)
-
+        self.VGR_img_normale = self.VGR_img_normale.resize((self.iTCJ_taille_cellule, self.iTCJ_taille_cellule), Image.LANCZOS)
+        self.VGR_img_bas = self.VGR_img_bas.resize((self.iTCJ_taille_cellule, self.iTCJ_taille_cellule), Image.LANCZOS)
+        # Conversion des images en image tkinter compatible
         self.VGR_tk_img_normale = ImageTk.PhotoImage(self.VGR_img_normale)
         self.VGR_tk_img_bas = ImageTk.PhotoImage(self.VGR_img_bas)
 
         # Configuration de la fenêtre
-        largeur_fenetre = self.VGR_colonnes * self.VGR_taille_cellule + 340
-        hauteur_fenetre = self.VGR_lignes * self.VGR_taille_cellule + 40
-        self.VGR_racine.geometry(f"{largeur_fenetre}x{hauteur_fenetre}")
+        iLargeur_fenetre = self.iVGR_colonnes * self.iTCJ_taille_cellule + 340
+        iHauteur_fenetre = self.iVGR_lignes * self.iTCJ_taille_cellule + 40
+        self.VGR_racine.geometry(f"{iLargeur_fenetre}x{iHauteur_fenetre}")
         self.VGR_racine.title("Puissance 4")
 
         # Canvas pour afficher la grille
         self.VGR_canvas = tk.Canvas(
-            racine,
-            width=self.VGR_colonnes * self.VGR_taille_cellule,
-            height=self.VGR_lignes * self.VGR_taille_cellule,
+            VGRracine,
+            width=self.iVGR_colonnes * self.iTCJ_taille_cellule,
+            height=self.iVGR_lignes * self.iTCJ_taille_cellule,
             bg="white",
             highlightthickness=0
         )
         self.VGR_canvas.pack(side=tk.LEFT, padx=20, pady=20)
 
-        self.afficher_grille()
+        self.VGR_afficher_grille()
 
-    def afficher_grille(self):
+    def VGR_afficher_grille(self):
         """
-        Affiche toutes les cellules de la grille avec les images appropriées.
+        Affiche toutes les cellules de la grille avec les images appropriés.
 
         Utilise une image différente pour la ligne du bas (bottomCELL) (avec le trait noir en bas du carré)
         et une image normale pour les autres lignes. (sans le trait noi en bas du carré)
         """
         self.VGR_canvas.delete("grille")
 
-        for ligne in range(self.VGR_lignes):
-            for colonne in range(self.VGR_colonnes):
-                x = colonne * self.VGR_taille_cellule
-                y = ligne * self.VGR_taille_cellule
+        for iLigne in range(self.iVGR_lignes):
+            for iColonne in range(self.iVGR_colonnes):
+                iX = iColonne * self.iTCJ_taille_cellule
+                iY = iLigne * self.iTCJ_taille_cellule
 
-                if ligne == self.VGR_lignes - 1:
-                    self.VGR_canvas.create_image(x, y, image=self.VGR_tk_img_bas, anchor="nw", tags="grille")
+                if iLigne == self.iVGR_lignes - 1:
+                    self.VGR_canvas.create_image(iX, iY, image=self.VGR_tk_img_bas, anchor="nw", tags="grille")
                 else:
-                    self.VGR_canvas.create_image(x, y, image=self.VGR_tk_img_normale, anchor="nw", tags="grille")
+                    self.VGR_canvas.create_image(iX, iY, image=self.VGR_tk_img_normale, anchor="nw", tags="grille")
 
         self.VGR_canvas.tag_raise("grille")
 
-    def afficher_effet_survol(self, colonne):
+    def VGR_afficher_effet_survol(self, iColonne):
         """
         Affiche un effet d'ombre grise (hachuré) sur la colonne survolée par la souris.
 
         Args:
-            colonne (int): L'indice de la colonne à surligner
+            iColonne (int): L'indice de la colonne à surligner
         """
         self.VGR_canvas.delete("survol")
-        self.VGR_colonne_survol = colonne
+        self.VGR_colonne_survol = iColonne
 
-        for ligne in range(self.VGR_lignes):
-            x = colonne * self.VGR_taille_cellule
-            y = ligne * self.VGR_taille_cellule
+        for iLigne in range(self.iVGR_lignes):
+            iX = iColonne * self.iTCJ_taille_cellule
+            iY = iLigne * self.iTCJ_taille_cellule
 
             self.VGR_canvas.create_rectangle(
-                x, y, x + self.VGR_taille_cellule, y + self.VGR_taille_cellule,
+                iX, iY, iX + self.iTCJ_taille_cellule, iY + self.iTCJ_taille_cellule,
                 fill="gray", stipple="gray50", tags="survol"
             )
 
-    def effacer_effet_survol(self):
+    def VGR_effacer_effet_survol(self):
         """
         Efface l'effet de survol de la grille.
         """
         self.VGR_canvas.delete("survol")
         self.VGR_colonne_survol = None
 
-    def animer_chute_pion(self, colonne, ligne_finale, joueur, rappel):
+    def VGR_animer_chute_pion(self, colonne, ligne_finale, joueur, rappel):
         """
         Anime la chute d'un pion avec effet de gravité et rebond.
 
@@ -123,15 +123,16 @@ class VueGrille:
             joueur (int): 1 ou -1 selon le joueur
             rappel (callable): Fonction à appeler quand l'animation est terminée
         """
-        couleur = self.VGR_couleurs[joueur]
-        x_centre = colonne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
-        y_finale = ligne_finale * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
+        # Recupere la couleur du pion
+        couleur = self.dVGR_couleurs[joueur]
+        x_centre = colonne * self.iTCJ_taille_cellule + self.iTCJ_taille_cellule // 2
+        y_finale = ligne_finale * self.iTCJ_taille_cellule + self.iTCJ_taille_cellule // 2
 
-        y = -self.VGR_taille_cellule // 2
+        y = -self.iTCJ_taille_cellule // 2
         VELOCITE = 0
         GRAVITE = 3
         AMORTISSEMENT = 0.2
-        rayon = self.VGR_taille_cellule // 2
+        rayon = self.iTCJ_taille_cellule // 2
 
         pion = self.VGR_canvas.create_oval(
             x_centre - rayon, y - rayon,
@@ -168,7 +169,7 @@ class VueGrille:
                         x_centre - rayon, y_finale - rayon,
                         x_centre + rayon, y_finale + rayon
                     )
-                    self.VGR_pions_affiches[(ligne_finale, colonne)] = pion
+                    self.lVGR_pions_affiches[(ligne_finale, colonne)] = pion
                     self.VGR_canvas.tag_raise("grille")
                     rappel()
                     return
@@ -184,29 +185,30 @@ class VueGrille:
 
         animer()
 
-    def afficher_message(self, message):
+    def VGR_afficher_message(self, message):
         """
         Affiche un message au centre de la grille (typiquement pour la fin de partie).
 
         Args:
             message (str): Le texte du message à afficher
         """
-        largeur = self.VGR_colonnes * self.VGR_taille_cellule
-        hauteur = self.VGR_lignes * self.VGR_taille_cellule
+        # Calcule la bonne taille de cadre pour l'image
+        iLargeur = self.iVGR_colonnes * self.iTCJ_taille_cellule
+        iHauteur = self.iVGR_lignes * self.iTCJ_taille_cellule
 
         self.VGR_canvas.create_rectangle(
-            largeur // 4, hauteur // 2 - 40,
-            3 * largeur // 4, hauteur // 2 + 40,
+            iLargeur // 4, iHauteur // 2 - 40,
+            3 * iLargeur // 4, iHauteur // 2 + 40,
             fill="white", outline="black", width=3, tags="message"
         )
 
         self.VGR_canvas.create_text(
-            largeur // 2, hauteur // 2,
+            iLargeur // 2, iHauteur // 2,
             text=message, font=("Arial", 20, "bold"),
             tags="message"
         )
 
-    def rafraichir_grille(self, matrice):
+    def VGR_rafraichir_grille(self, matrice):
         """
         Rafraîchit complètement l'affichage de la grille à partir de la matrice.
 
@@ -218,16 +220,16 @@ class VueGrille:
         """
         self.VGR_canvas.delete("pion")
         self.VGR_canvas.delete("message")  # Supprimer le message de victoire
-        self.VGR_pions_affiches.clear()
+        self.lVGR_pions_affiches.clear()
 
-        for ligne in range(self.VGR_lignes):
-            for colonne in range(self.VGR_colonnes):
-                valeur = matrice[ligne][colonne]
+        for iLigne in range(self.iVGR_lignes):
+            for iColonne in range(self.iVGR_colonnes):
+                valeur = matrice[iLigne][iColonne]
                 if valeur != 0:
-                    couleur = self.VGR_couleurs[valeur]
-                    x = colonne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
-                    y = ligne * self.VGR_taille_cellule + self.VGR_taille_cellule // 2
-                    rayon = self.VGR_taille_cellule // 2
+                    couleur = self.dVGR_couleurs[valeur]
+                    x = iColonne * self.iTCJ_taille_cellule + self.iTCJ_taille_cellule // 2
+                    y = iLigne * self.iTCJ_taille_cellule + self.iTCJ_taille_cellule // 2
+                    rayon = self.iTCJ_taille_cellule // 2
                     self.VGR_canvas.create_oval(
                         x - rayon, y - rayon,
                         x + rayon, y + rayon,
@@ -255,42 +257,42 @@ class VueAccueil:
         self.VAC_racine.geometry("400x500")
         self.VAC_racine.configure(bg="white")
 
-    def creer_interface(self, rappel_1v1, rappel_facile, rappel_moyen, rappel_difficile):
+    def VAC_creer_interface(self, cRappel_1v1, cRappel_facile, cRappel_moyen, cRappel_difficile):
         """
         Crée l'interface du menu d'accueil avec tous les boutons de sélection.
 
         Args:
-            rappel_1v1 (callable): Fonction appelée lors du clic sur "Mode 1v1"
-            rappel_facile (callable): Fonction appelée lors du clic sur "Facile"
-            rappel_moyen (callable): Fonction appelée lors du clic sur "Moyen"
-            rappel_difficile (callable): Fonction appelée lors du clic sur "Difficile"
+            cRappel_1v1 (callable): Fonction appelée lors du clic sur "Mode 1v1"
+            cRappel_facile (callable): Fonction appelée lors du clic sur "Facile"
+            cRappel_moyen (callable): Fonction appelée lors du clic sur "Moyen"
+            cRappel_difficile (callable): Fonction appelée lors du clic sur "Difficile"
         """
         # Nettoyer la fenêtre
-        for widget in self.VAC_racine.winfo_children():
-            widget.destroy()
+        for cWidget in self.VAC_racine.winfo_children():
+            cWidget.destroy()
 
         # Titre
-        titre = tk.Label(
+        cTitre = tk.Label(
             self.VAC_racine,
             text="PUISSANCE 4",
             font=("Arial", 28, "bold"),
             bg="white",
             fg="#333333"
         )
-        titre.pack(pady=40)
+        cTitre.pack(pady=40)
 
         # Sous-titre
-        sous_titre = tk.Label(
+        cSous_titre = tk.Label(
             self.VAC_racine,
             text="Choisissez votre mode de jeu",
             font=("Arial", 14),
             bg="white",
             fg="#666666"
         )
-        sous_titre.pack(pady=10)
+        cSous_titre.pack(pady=10)
 
         # Bouton 1v1
-        bouton_1v1 = tk.Button(
+        cBouton_1v1 = tk.Button(
             self.VAC_racine,
             text="Mode 1v1",
             font=("Arial", 16, "bold"),
@@ -301,22 +303,22 @@ class VueAccueil:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_1v1
+            command=cRappel_1v1
         )
-        bouton_1v1.pack(pady=15)
+        cBouton_1v1.pack(pady=15)
 
         # Séparateur
-        separateur = tk.Label(
+        cSeparateur = tk.Label(
             self.VAC_racine,
             text="─── Contre l'IA ───",
             font=("Arial", 12),
             bg="white",
             fg="#999999"
         )
-        separateur.pack(pady=10)
+        cSeparateur.pack(pady=10)
 
         # Bouton Facile
-        bouton_facile = tk.Button(
+        cBouton_facile = tk.Button(
             self.VAC_racine,
             text="Facile ★",
             font=("Arial", 16, "bold"),
@@ -327,12 +329,12 @@ class VueAccueil:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_facile
+            command=cRappel_facile
         )
-        bouton_facile.pack(pady=10)
+        cBouton_facile.pack(pady=10)
 
         # Bouton Moyen
-        bouton_moyen = tk.Button(
+        cBouton_moyen = tk.Button(
             self.VAC_racine,
             text="Moyen ★★",
             font=("Arial", 16, "bold"),
@@ -343,12 +345,12 @@ class VueAccueil:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_moyen
+            command=cRappel_moyen
         )
-        bouton_moyen.pack(pady=10)
+        cBouton_moyen.pack(pady=10)
 
         # Bouton Difficile
-        bouton_difficile = tk.Button(
+        cBouton_difficile = tk.Button(
             self.VAC_racine,
             text="Difficile ★★★",
             font=("Arial", 16, "bold"),
@@ -359,9 +361,9 @@ class VueAccueil:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_difficile
+            command=cRappel_difficile
         )
-        bouton_difficile.pack(pady=10)
+        cBouton_difficile.pack(pady=10)
 
 
 class VueParametres:
@@ -385,115 +387,115 @@ class VueParametres:
         self.VPA_mode_ia = mode_ia
         self.VPA_difficulte = difficulte
 
-    def creer_interface(self, rappel_jouer, rappel_retour):
+    def VPA_creer_interface(self, cRappel_jouer, cRappel_retour):
         """
         Crée l'interface de configuration avec tous les paramètres personnalisables.
 
         Args:
-            rappel_jouer (callable): Fonction appelée lors du clic sur "JOUER"
-            rappel_retour (callable): Fonction appelée lors du clic sur "Retour au menu"
+            cRappel_jouer (callable): Fonction appelée lors du clic sur "JOUER"
+            cRappel_retour (callable): Fonction appelée lors du clic sur "Retour au menu"
         """
         # Nettoyer la fenêtre
-        for widget in self.VPA_racine.winfo_children():
-            widget.destroy()
+        for cWidget in self.VPA_racine.winfo_children():
+            cWidget.destroy()
 
         self.VPA_racine.geometry("550x700")
         self.VPA_racine.configure(bg="white")
 
         # Titre
-        titre = tk.Label(
+        cTitre = tk.Label(
             self.VPA_racine,
             text="PARAMÈTRES",
             font=("Arial", 28, "bold"),
             bg="white",
             fg="#333333"
         )
-        titre.pack(pady=30)
+        cTitre.pack(pady=30)
 
         # Affichage du mode sélectionné
         if self.VPA_mode_ia is None:
-            texte_mode = "Mode 1v1"
-            couleur_mode = "#000000"
+            cTexte_mode = "Mode 1v1"
+            cCouleur_mode = "#000000"
         else:
-            texte_difficulte = {1: "Facile", 3: "Moyen", 5: "Difficile"}.get(self.VPA_difficulte, "Moyen")
-            texte_mode = f"Contre l'IA - {texte_difficulte}"
-            couleur_mode = "#000000"
+            cTexte_difficulte = {1: "Facile", 3: "Moyen", 5: "Difficile"}.get(self.VPA_difficulte, "Moyen")
+            cTexte_mode = f"Contre l'IA - {cTexte_difficulte}"
+            cCouleur_mode = "#000000"
 
-        etiquette_mode = tk.Label(
+        cEtiquette_mode = tk.Label(
             self.VPA_racine,
-            text=f"Mode de jeu : {texte_mode}",
+            text=f"Mode de jeu : {cTexte_mode}",
             font=("Arial", 16, "bold"),
-            bg=couleur_mode,
+            bg=cCouleur_mode,
             fg="white",
             padx=20,
             pady=10,
             relief="raised",
             bd=3
         )
-        etiquette_mode.pack(pady=20)
+        cEtiquette_mode.pack(pady=20)
 
         # Variables par défaut pour les paramètres
-        variable_lignes = tk.StringVar(value="6")
-        variable_colonnes = tk.StringVar(value="7")
-        variable_alignes = tk.StringVar(value="4")
-        variable_premier = tk.StringVar(value="Joueur" if self.VPA_mode_ia else "Rouge")
-        variable_couleur_joueur = tk.StringVar(value="Rouge")
+        cVariable_lignes = tk.StringVar(value="6")
+        cVariable_colonnes = tk.StringVar(value="7")
+        cVariable_alignes = tk.StringVar(value="4")
+        cVariable_premier = tk.StringVar(value="Joueur" if self.VPA_mode_ia else "Rouge")
+        cVariable_couleur_joueur = tk.StringVar(value="Rouge")
 
         # Frame pour les paramètres
-        cadre_parametres = tk.Frame(self.VPA_racine, bg="white")
-        cadre_parametres.pack(pady=20)
+        cCadre_parametres = tk.Frame(self.VPA_racine, bg="white")
+        cCadre_parametres.pack(pady=20)
 
         # Nombre de lignes
-        tk.Label(cadre_parametres, text="Nombre de lignes :", font=("Arial", 12), bg="white").grid(row=0, column=0,padx=10,pady=10, sticky="w")
-        combo_lignes = ttk.Combobox(cadre_parametres , textvariable=variable_lignes, values =list(range(4, 11)), width=15,
+        tk.Label(cCadre_parametres, text="Nombre de lignes :", font=("Arial", 12), bg="white").grid(row=0, column=0,padx=10,pady=10, sticky="w")
+        cCombo_lignes = ttk.Combobox(cCadre_parametres , textvariable=cVariable_lignes, values =list(range(4, 11)), width=15,
                                     font=("Arial", 12), state="readonly")
-        combo_lignes.grid(row=0, column=1, padx=10, pady=10)
+        cCombo_lignes.grid(row=0, column=1, padx=10, pady=10)
 
         # Nombre de colonnes
-        tk.Label(cadre_parametres, text="Nombre de colonnes :", font=("Arial", 12), bg="white").grid(row=1, column=0,padx=10,pady=10,sticky="w")
-        combo_colonnes = ttk.Combobox(cadre_parametres, textvariable=variable_colonnes, values = list(range(4, 11)),width=15,font=("Arial", 12), state="readonly")
-        combo_colonnes.grid(row=1, column=1, padx=10, pady=10)
+        tk.Label(cCadre_parametres, text="Nombre de colonnes :", font=("Arial", 12), bg="white").grid(row=1, column=0,padx=10,pady=10,sticky="w")
+        cCombo_colonnes = ttk.Combobox(cCadre_parametres, textvariable=cVariable_colonnes, values = list(range(4, 11)),width=15,font=("Arial", 12), state="readonly")
+        cCombo_colonnes.grid(row=1, column=1, padx=10, pady=10)
 
         # Nombre de pions alignés
-        tk.Label(cadre_parametres, text="Pions à aligner :" , font=("Arial", 12), bg="white").grid(row=2, column=0, padx=10, pady=10, sticky="w")
-        combo_alignes = ttk.Combobox(cadre_parametres, textvariable=variable_alignes, values =list(range(3, 7)), width=15, font=("Arial", 12), state="readonly")
-        combo_alignes.grid(row=2, column=1, padx=10, pady=10)
+        tk.Label(cCadre_parametres, text="Pions à aligner :" , font=("Arial", 12), bg="white").grid(row=2, column=0, padx=10, pady=10, sticky="w")
+        cCombo_alignes = ttk.Combobox(cCadre_parametres, textvariable=cVariable_alignes, values =list(range(3, 7)), width=15, font=("Arial", 12), state="readonly")
+        cCombo_alignes.grid(row=2, column=1, padx=10, pady=10)
 
         # Qui commence en premier
-        tk.Label(cadre_parametres, text="Qui commence :", font=("Arial", 12), bg="white").grid(row=3, column=0, padx=10, pady=10, sticky="w")
+        tk.Label(cCadre_parametres, text="Qui commence :", font=("Arial", 12), bg="white").grid(row=3, column=0, padx=10, pady=10, sticky="w")
         if self.VPA_mode_ia is None:
-            combo_premier = ttk.Combobox(cadre_parametres, textvariable=variable_premier, values=["Rouge", "Jaune"],width=15, font=("Arial", 12), state="readonly")
+            cCombo_premier = ttk.Combobox(cCadre_parametres, textvariable=cVariable_premier, values=["Rouge", "Jaune"],width=15, font=("Arial", 12), state="readonly")
         else:
-            combo_premier = ttk.Combobox(cadre_parametres , textvariable=variable_premier, values=["Joueur", "IA"],width=15,font=("Arial", 12), state="readonly")
+            cCombo_premier = ttk.Combobox(cCadre_parametres , textvariable=cVariable_premier, values=["Joueur", "IA"],width=15,font=("Arial", 12), state="readonly")
 
-        combo_premier.grid(row=3, column=1, padx=10, pady=10)
+        cCombo_premier.grid(row=3, column=1, padx=10, pady=10)
 
         # Couleur du joueur (seulement en mode IA)
         if self.VPA_mode_ia is not None:
-            tk.Label(cadre_parametres, text="Couleur joueur :", font=("Arial", 12), bg="white").grid(row=4, column=0,padx=10,pady=10,sticky="w")
-            combo_couleur = ttk.Combobox(cadre_parametres , textvariable=variable_couleur_joueur,values=["Rouge", "Jaune"], width=15,font=("Arial", 12), state="readonly")
-            combo_couleur.grid(row=4, column=1, padx=10, pady=10)
+            tk.Label(cCadre_parametres, text="Couleur joueur :", font=("Arial", 12), bg="white").grid(row=4, column=0,padx=10,pady=10,sticky="w")
+            cCombo_couleur = ttk.Combobox(cCadre_parametres , textvariable=cVariable_couleur_joueur,values=["Rouge", "Jaune"], width=15,font=("Arial", 12), state="readonly")
+            cCombo_couleur.grid(row=4, column=1, padx=10, pady=10)
 
             # Label pour afficher la couleur de l'IA
-            etiquette_couleur_ia = tk.Label(cadre_parametres, text="Couleur IA : Jaune⬤", font=("Arial", 12, "italic"),bg="white",fg="#FFD700")
-            etiquette_couleur_ia.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+            cEtiquette_couleur_ia = tk.Label(cCadre_parametres, text="Couleur IA : Jaune⬤", font=("Arial", 12, "italic"),bg="white",fg="#FFD700")
+            cEtiquette_couleur_ia.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
 
-            def mettre_a_jour_couleur_ia(*args):
+            def cMettre_a_jour_couleur_ia(*args):
                 """
                 Met à jour l'affichage de la couleur de l'IA en fonction du choix du joueur.
 
                 Args:
                     *args: Arguments automatiques du callback trace de StringVar
                 """
-                if variable_couleur_joueur.get() == "Rouge":
-                    etiquette_couleur_ia.config(text="Couleur IA : Jaune⬤", fg="#FFD700")
+                if cVariable_couleur_joueur.get() == "Rouge":
+                    cEtiquette_couleur_ia.config(text="Couleur IA : Jaune⬤", fg="#FFD700")
                 else:
-                    etiquette_couleur_ia.config(text="Couleur IA : Rouge⬤" , fg="#FF4444")
+                    cEtiquette_couleur_ia.config(text="Couleur IA : Rouge⬤" , fg="#FF4444")
 
-            variable_couleur_joueur.trace("w", mettre_a_jour_couleur_ia)
+            cVariable_couleur_joueur.trace("w", cMettre_a_jour_couleur_ia)
 
         # Bouton Jouer
-        bouton_jouer = tk.Button(
+        cBouton_jouer = tk.Button(
             self.VPA_racine,
             text="JOUER",
             font=("Arial", 18, "bold"),
@@ -504,13 +506,13 @@ class VueParametres:
             relief="raised",
             bd=4,
             cursor="hand2",
-            command=lambda: rappel_jouer(variable_lignes, variable_colonnes, variable_alignes, variable_premier,
-                                         variable_couleur_joueur)
+            command=lambda: cRappel_jouer(cVariable_lignes, cVariable_colonnes, cVariable_alignes, cVariable_premier,
+                                         cVariable_couleur_joueur)
         )
-        bouton_jouer.pack(pady=30)
+        cBouton_jouer.pack(pady=30)
 
         # Bouton Retour
-        bouton_retour = tk.Button(
+        cBouton_retour = tk.Button(
             self.VPA_racine,
             text="Retour au menu",
             font=("Arial", 14),
@@ -521,9 +523,9 @@ class VueParametres:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_retour
+            command=cRappel_retour
         )
-        bouton_retour.pack(pady=10)
+        cBouton_retour.pack(pady=10)
 
 
 class VueActions:
@@ -544,37 +546,37 @@ class VueActions:
         self.VAT_racine = racine
         self.VAT_cadre_actions = None
 
-    def creer_interface(self, rappel_annuler, rappel_refaire, rappel_rejouer, rappel_accueil):
+    def VAT_creer_interface(self, cRappel_annuler, cRappel_refaire, cRappel_rejouer, cRappel_accueil):
         """
         Crée l'interface des boutons d'action.
 
         Args:
-            rappel_annuler (callable): Fonction appelée lors du clic sur "Undo"
-            rappel_refaire (callable): Fonction appelée lors du clic sur "Redo"
-            rappel_rejouer (callable): Fonction appelée lors du clic sur "Rejouer"
-            rappel_accueil (callable): Fonction appelée lors du clic sur "Home"
+            cRappel_annuler (callable): Fonction appelée lors du clic sur "Undo"
+            cRappel_refaire (callable): Fonction appelée lors du clic sur "Redo"
+            cRappel_rejouer (callable): Fonction appelée lors du clic sur "Rejouer"
+            cRappel_accueil (callable): Fonction appelée lors du clic sur "Home"
         """
         # Frame pour contenir les boutons d'action
         self.VAT_cadre_actions = tk.Frame(self.VAT_racine, bg="white")
         self.VAT_cadre_actions.pack(side=tk.LEFT, padx=20, pady=20, fill=tk.Y)
 
         # Titre de la section
-        titre_actions = tk.Label(
+        cTitre_actions = tk.Label(
             self.VAT_cadre_actions,
             text="ACTIONS",
             font=("Arial", 16, "bold"),
             bg="white",
             fg="#333333"
         )
-        titre_actions.pack(pady=10)
+        cTitre_actions.pack(pady=10)
 
         # Frame pour les boutons Annuler et Refaire (côte à côte)
-        cadre_annuler_refaire = tk.Frame(self.VAT_cadre_actions, bg="white")
-        cadre_annuler_refaire.pack(pady=10)
+        cCadre_annuler_refaire = tk.Frame(self.VAT_cadre_actions, bg="white")
+        cCadre_annuler_refaire.pack(pady=10)
 
         # Bouton Annuler
-        bouton_annuler = tk.Button(
-            cadre_annuler_refaire,
+        cBouton_annuler = tk.Button(
+            cCadre_annuler_refaire,
             text="Undo",
             font=("Arial", 12, "bold"),
             bg="#FF9800",
@@ -584,13 +586,13 @@ class VueActions:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_annuler
+            command=cRappel_annuler
         )
-        bouton_annuler.pack(side=tk.LEFT, padx=5)
+        cBouton_annuler.pack(side=tk.LEFT, padx=5)
 
         # Bouton Refaire
-        bouton_refaire = tk.Button(
-            cadre_annuler_refaire,
+        cBouton_refaire = tk.Button(
+            cCadre_annuler_refaire,
             text="Redo",
             font=("Arial", 12, "bold"),
             bg="#2196F3",
@@ -600,12 +602,12 @@ class VueActions:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_refaire
+            command=cRappel_refaire
         )
-        bouton_refaire.pack(side=tk.LEFT, padx=5)
+        cBouton_refaire.pack(side=tk.LEFT, padx=5)
 
         # Bouton Rejouer
-        bouton_rejouer = tk.Button(
+        cBouton_rejouer = tk.Button(
             self.VAT_cadre_actions,
             text="Rejouer",
             font=("Arial", 14, "bold"),
@@ -616,12 +618,12 @@ class VueActions:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_rejouer
+            command=cRappel_rejouer
         )
-        bouton_rejouer.pack(pady=10)
+        cBouton_rejouer.pack(pady=10)
 
         # Bouton Accueil
-        bouton_accueil = tk.Button(
+        cBouton_accueil = tk.Button(
             self.VAT_cadre_actions,
             text="Home",
             font=("Arial", 14, "bold"),
@@ -632,6 +634,6 @@ class VueActions:
             relief="raised",
             bd=3,
             cursor="hand2",
-            command=rappel_accueil
+            command=cRappel_accueil
         )
-        bouton_accueil.pack(pady=10)
+        cBouton_accueil.pack(pady=10)

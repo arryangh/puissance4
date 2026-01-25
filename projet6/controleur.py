@@ -1,6 +1,6 @@
 import tkinter as tk
 from vue import VueGrille, VueAccueil, VueParametres, VueActions
-from model import *
+from model import Creer_matrice, Reinitialiser_historique, Sauvegarder_etat, Verifier_victoire, Afficher_matrice, Ajouter_pion, Undo_redo, Meilleur_coup_ia
 
 
 class ControleurJeu:
@@ -11,50 +11,50 @@ class ControleurJeu:
     la détection de fin de partie et l'intégration avec l'IA.
     """
 
-    def __init__(self, racine, lignes=6, colonnes=7, nombre_alignes=4, mode_ia=None, difficulte=None):
+    def __init__(self, CTJracine, iLignes=6, iColonnes=7, iNombre_alignes=4, cMode_ia=None, iDifficulte=None):
         """
         Initialise le contrôleur de jeu.
 
         Args:
-            racine (tk.Tk): Fenêtre principale Tkinter
-            lignes (int): Nombre de lignes de la grille (défaut: 6)
-            colonnes (int): Nombre de colonnes de la grille (défaut: 7)
-            nombre_alignes (int): Nombre de pions à aligner pour gagner (défaut: 4)
-            mode_ia (str or None): "rouge" si l'IA joue rouge, "jaune" si jaune, None en mode 1v1
-            difficulte (int or None): Profondeur de recherche de l'IA (1=facile, 3=moyen, 5=difficile)
+            CTJracine (tk.Tk): Fenêtre principale Tkinter
+            iLignes (int): Nombre de lignes de la grille (défaut: 6)
+            iColonnes (int): Nombre de colonnes de la grille (défaut: 7)
+            iNombre_alignes (int): Nombre de pions à aligner pour gagner (défaut: 4)
+            cMode_ia (str or None): "rouge" si l'IA joue rouge, "jaune" si jaune, None en mode 1v1
+            iDifficulte (int or None): Profondeur de recherche de l'IA (1=facile, 3=moyen, 5=difficile)
         """
-        self.CTJ_racine = racine
-        self.CTJ_lignes = lignes
-        self.CTJ_colonnes = colonnes
-        self.CTJ_nombre_alignes = nombre_alignes
-        self.CTJ_mode_ia = mode_ia
-        self.CTJ_difficulte = difficulte
+        self.CTJ_racine = CTJracine
+        self.iCTJ_lignes = iLignes
+        self.iCTJ_colonnes = iColonnes
+        self.iCTJ_nombre_alignes = iNombre_alignes
+        self.cCTJ_mode_ia = cMode_ia
+        self.iCTJ_difficulte = iDifficulte
 
-        # Calcul de la taille des cellules pour écrans 1920x1080
-        # Calculer la taille en fonction de la dimension la plus contraignante (pour que ça marche partout)
-        taille_max_lignes = 690 / lignes  # Hauteur max disponible (6 lignes * 115 = 690)
-        taille_max_colonnes = 805 / colonnes  # Largeur max disponible (7 colonnes * 115 = 805)
+        # Calcul dynamique de la taille des cellules pour écrans 1920x1080
+        # Calculer la taille en fonction de la dimension la plus contraignante
+        fTaille_max_lignes = 690 / iLignes  # Hauteur max disponible (6 lignes * 115 = 690)
+        fTaille_max_colonnes = 805 / iColonnes  # Largeur max disponible (7 colonnes * 115 = 805)
 
         # Prendre la plus petite des deux pour que tout rentre
-        self.CTJ_taille_cellule = int(min(taille_max_lignes, taille_max_colonnes, 115))  # Max 115px
+        self.iTCJ_taille_cellule = int(min(fTaille_max_lignes, fTaille_max_colonnes, 90))  
 
-        self.CTJ_animation_en_cours = False
-        self.CTJ_partie_terminee = False
+        self.bCTJ_animation_en_cours = False
+        self.bCTJ_partie_terminee = False
 
         # Création de la matrice de jeu
-        self.CTJ_matrice = creer_matrice(lignes, colonnes)
-        reinitialiser_historique(self.CTJ_matrice)
-        self.CTJ_joueur_actuel = 1  # 1 pour rouge, -1 pour jaune
+        self.lCTJ_matrice = Creer_matrice(iLignes, iColonnes)
+        Reinitialiser_historique(self.lCTJ_matrice)
+        self.iCTJ_joueur_actuel = 1  # 1 pour rouge, -1 pour jaune
 
         # Création de la vue
-        self.CTJ_vue = VueGrille(racine, lignes, colonnes, self.CTJ_taille_cellule)
+        self.CTJ_vue = VueGrille(CTJracine, iLignes, iColonnes, self.iTCJ_taille_cellule)
 
         # Binding des événements souris
-        self.CTJ_vue.VGR_canvas.bind("<Motion>", self.sur_mouvement_souris)
-        self.CTJ_vue.VGR_canvas.bind("<Button-1>", self.sur_clic)
-        self.CTJ_vue.VGR_canvas.bind("<Leave>", self.sur_sortie_souris)
+        self.CTJ_vue.VGR_canvas.bind("<Motion>", self.CTJ_sur_mouvement_souris)
+        self.CTJ_vue.VGR_canvas.bind("<Button-1>", self.CTJ_sur_clic)
+        self.CTJ_vue.VGR_canvas.bind("<Leave>", self.CTJ_sur_sortie_souris)
 
-    def sur_mouvement_souris(self, evenement):
+    def CTJ_sur_mouvement_souris(self, cEvenement):
         """
         Gère le mouvement de la souris pour afficher l'effet de survol.
 
@@ -62,33 +62,33 @@ class ControleurJeu:
         est en cours, la partie est terminée, ou si c'est le tour de l'IA.
 
         Args:
-            evenement (tk.Event): Événement de mouvement de souris
+            cEvenement (tk.Event): Événement de mouvement de souris
         """
-        if self.CTJ_animation_en_cours or self.CTJ_partie_terminee:
+        if self.bCTJ_animation_en_cours or self.bCTJ_partie_terminee:
             return
 
         # Bloquer le survol si c'est le tour de l'IA
-        if self.CTJ_mode_ia and self.est_tour_ia():
+        if self.cCTJ_mode_ia and self.CTJ_est_tour_ia():
             return
-
-        colonne = evenement.x // self.CTJ_taille_cellule
-
-        if 0 <= colonne < self.CTJ_colonnes:
-            if colonne != self.CTJ_vue.VGR_colonne_survol:
-                self.CTJ_vue.afficher_effet_survol(colonne)
+        # Calculer le numero de la colonne 
+        iColonne = cEvenement.x // self.iTCJ_taille_cellule
+        # Verifier si la colonne est valide (càd dans la grille) 
+        if 0 <= iColonne < self.iCTJ_colonnes:
+            if iColonne != self.CTJ_vue.VGR_colonne_survol:
+                self.CTJ_vue.VGR_afficher_effet_survol(iColonne)
         else:
-            self.CTJ_vue.effacer_effet_survol()
+            self.CTJ_vue.VGR_effacer_effet_survol()
 
-    def sur_sortie_souris(self, evenement):
+    def CTJ_sur_sortie_souris(self, cEvenement):
         """
         Efface l'effet de survol quand la souris quitte le canvas.
 
         Args:
-            evenement (tk.Event): Événement de sortie de souris
+            cEvenement (tk.Event): Événement de sortie de souris
         """
-        self.CTJ_vue.effacer_effet_survol()
+        self.CTJ_vue.VGR_effacer_effet_survol()
 
-    def sur_clic(self, evenement):
+    def CTJ_sur_clic(self, cEvenement):
         """
         Gère le clic de souris pour ajouter un pion.
 
@@ -96,50 +96,51 @@ class ControleurJeu:
         ou si c'est le tour de l'IA.
 
         Args:
-            evenement (tk.Event): Événement de clic de souris
+            cEvenement (tk.Event): Événement de clic de souris
         """
-        if self.CTJ_animation_en_cours or self.CTJ_partie_terminee:
+        if self.bCTJ_animation_en_cours or self.bCTJ_partie_terminee:
             return
 
         # Bloquer les clics si c'est le tour de l'IA
-        if self.CTJ_mode_ia and self.est_tour_ia():
+        if self.cCTJ_mode_ia and self.CTJ_est_tour_ia():
             return
+        # Calculer le numero de la colonne
+        iColonne = cEvenement.x // self.iTCJ_taille_cellule
+        # Verifier si la colonne est valide (càd dans la grille) 
+        if 0 <= iColonne < self.iCTJ_colonnes:
+            self.CTJ_jouer_coup(iColonne)
 
-        colonne = evenement.x // self.CTJ_taille_cellule
-
-        if 0 <= colonne < self.CTJ_colonnes:
-            self.jouer_coup(colonne)
-
-    def est_tour_ia(self):
+    def CTJ_est_tour_ia(self):
         """
         Vérifie si c'est le tour de l'IA de jouer.
 
         Returns:
             bool: True si c'est le tour de l'IA, False sinon
         """
-        if self.CTJ_mode_ia == "rouge" and self.CTJ_joueur_actuel == 1:
+        if self.cCTJ_mode_ia == "rouge" and self.iCTJ_joueur_actuel == 1:
             return True
-        if self.CTJ_mode_ia == "jaune" and self.CTJ_joueur_actuel == -1:
+        if self.cCTJ_mode_ia == "jaune" and self.iCTJ_joueur_actuel == -1:
             return True
         return False
 
-    def tour_ia(self):
+    def CTJ_tour_ia(self):
         """
         Fait jouer l'IA en calculant et en jouant le meilleur coup.
 
         Utilise l'algorithme Minimax avec la profondeur correspondant
-        au niveau de difficulté choisi.
+        au niveau de difficulté choisie.
         """
-        if self.CTJ_partie_terminee:
+        # Si la partie est fini ne rien faire
+        if self.bCTJ_partie_terminee:
             return
 
-        joueur_ia = 1 if self.CTJ_mode_ia == "rouge" else -1
-        colonne = meilleur_coup_ia(self.CTJ_matrice, joueur_ia, self.CTJ_difficulte, self.CTJ_nombre_alignes)
+        iJoueur_ia = 1 if self.cCTJ_mode_ia == "rouge" else -1
+        iColonne = Meilleur_coup_ia(self.lCTJ_matrice, iJoueur_ia, self.iCTJ_difficulte, self.iCTJ_nombre_alignes)
 
-        if colonne is not None:
-            self.jouer_coup(colonne)
+        if iColonne is not None:
+            self.CTJ_jouer_coup(iColonne)
 
-    def jouer_coup(self, colonne):
+    def CTJ_jouer_coup(self, iColonne):
         """
         Tente de jouer un coup dans la colonne spécifiée.
 
@@ -147,25 +148,27 @@ class ControleurJeu:
         à la matrice, sauvegarde l'état et lance l'animation.
 
         Args:
-            colonne (int): L'indice de la colonne où jouer
+            iColonne (int): L'indice de la colonne où jouer
         """
-        ligne_destination = None
-        for ligne in range(self.CTJ_lignes - 1, -1, -1):
-            if self.CTJ_matrice[ligne][colonne] == 0:
-                ligne_destination = ligne
+        iLigne_destination = None
+        # Parcours les lignes de bas en haut pour trouver la premiere case vide
+        for iLigne in range(self.iCTJ_lignes - 1, -1, -1):
+            #v Verifie si la case est vide 
+            if self.lCTJ_matrice[iLigne][iColonne] == 0:
+                iLigne_destination = iLigne
                 break
 
-        if ligne_destination is None:
+        if iLigne_destination is None:
             print("Colonne pleine !")
             return
 
-        resultat = ajouter_pion(self.CTJ_matrice, self.CTJ_joueur_actuel, colonne)
-        sauvegarder_etat(self.CTJ_matrice)
+        iResultat = Ajouter_pion(self.lCTJ_matrice, self.iCTJ_joueur_actuel, iColonne)
+        Sauvegarder_etat(self.lCTJ_matrice)
 
-        if resultat == 0:
-            self.animer_chute_pion(colonne, ligne_destination, self.CTJ_joueur_actuel)
+        if iResultat == 0:
+            self.CTJ_animer_chute_pion(iColonne, iLigne_destination, self.iCTJ_joueur_actuel)
 
-    def animer_chute_pion(self, colonne, ligne_finale, joueur):
+    def CTJ_animer_chute_pion(self, iColonne, iLigne_finale, iJoueur):
         """
         Lance l'animation de chute du pion.
 
@@ -173,108 +176,106 @@ class ControleurJeu:
         une fois l'animation terminée.
 
         Args:
-            colonne (int): L'indice de la colonne
-            ligne_finale (int): L'indice de la ligne finale du pion
-            joueur (int): 1 ou -1 selon le joueur
+            iColonne (int): L'indice de la colonne
+            iLigne_finale (int): L'indice de la ligne finale du pion
+            iJoueur (int): 1 ou -1 selon le joueur
         """
-        self.CTJ_animation_en_cours = True
-        self.CTJ_vue.effacer_effet_survol()
+        self.bCTJ_animation_en_cours = True
+        self.CTJ_vue.VGR_effacer_effet_survol()
 
-        def fin_animation():
+        def cFin_animation():
             """Fonction appelée à la fin de l'animation."""
-            self.CTJ_animation_en_cours = False
-            self.verifier_fin_partie()
+            self.bCTJ_animation_en_cours = False
+            self.CTJ_verifier_fin_partie()
 
-        self.CTJ_vue.animer_chute_pion(colonne, ligne_finale, joueur, fin_animation)
+        self.CTJ_vue.VGR_animer_chute_pion(iColonne, iLigne_finale, iJoueur, cFin_animation)
 
-    def verifier_fin_partie(self):
+    def CTJ_verifier_fin_partie(self):
         """
         Vérifie si la partie est terminée (victoire ou match nul).
 
         Affiche le message approprié si la partie est terminée, sinon
         change de joueur et fait jouer l'IA si c'est son tour.
         """
-        resultat = verifier_victoire(self.CTJ_matrice, self.CTJ_nombre_alignes)
+        iResultat = Verifier_victoire(self.lCTJ_matrice, self.iCTJ_nombre_alignes)
 
-        if resultat == 1:
-            self.CTJ_partie_terminee = True
-            self.CTJ_vue.effacer_effet_survol()
-            self.CTJ_vue.afficher_message("Victoire du ROUGE!")
+        if iResultat == 1:
+            self.bCTJ_partie_terminee = True
+            self.CTJ_vue.VGR_effacer_effet_survol()
+            self.CTJ_vue.VGR_afficher_message("Victoire du ROUGE!")
             print("\n" + "=" * 50)
-            afficher_matrice(self.CTJ_matrice)
-            print("Victoire du joueur ROUGE !")
+            Afficher_matrice(self.lCTJ_matrice)
+            print("Victoire du joueur ROUGE ! ")
             print("=" * 50)
-
-        elif resultat == -1:
-            self.CTJ_partie_terminee = True
-            self.CTJ_vue.effacer_effet_survol()
-            self.CTJ_vue.afficher_message("Victoire du JAUNE !")
+        elif iResultat == -1:
+            self.bCTJ_partie_terminee = True
+            self.CTJ_vue.VGR_effacer_effet_survol()
+            self.CTJ_vue.VGR_afficher_message("Victoire du JAUNE !")
             print("\n" + "=" * 50)
-            afficher_matrice(self.CTJ_matrice)
-            print("Victoire du joueur JAUNE !")
+            Afficher_matrice(self.lCTJ_matrice)
+            print(" Victoire du joueur JAUNE !")
             print("=" * 50)
-
-        elif self.grille_pleine():
-            self.CTJ_partie_terminee = True
-            self.CTJ_vue.effacer_effet_survol()
-            self.CTJ_vue.afficher_message("Match nul !")
+        elif self.CTJ_grille_pleine():
+            self.bCTJ_partie_terminee = True
+            self.CTJ_vue.VGR_effacer_effet_survol()
+            self.CTJ_vue.VGR_afficher_message("Match nul !")
             print("\n" + "=" * 50)
-            afficher_matrice(self.CTJ_matrice)
+            Afficher_matrice(self.lCTJ_matrice)
             print("Match nul !")
             print("=" * 50)
-
         else:
-            self.CTJ_joueur_actuel *= -1
+            self.iCTJ_joueur_actuel *= -1
 
             # Si c'est le tour de l'IA, la faire jouer après un court délai
-            if self.CTJ_mode_ia and self.est_tour_ia():
-                self.CTJ_racine.after(500, self.tour_ia)
+            if self.cCTJ_mode_ia and self.CTJ_est_tour_ia():
+                self.CTJ_racine.after(500, self.CTJ_tour_ia)
 
-    def grille_pleine(self):
+    def CTJ_grille_pleine(self):
         """
         Vérifie si la grille est complètement pleine.
 
         Returns:
             bool: True si toutes les colonnes sont pleines, False sinon
         """
-        for colonne in range(self.CTJ_colonnes):
-            if self.CTJ_matrice[0][colonne] == 0:
+        # Parcours les colonnes pour savoir si c'est plein
+        for iColonne in range(self.iCTJ_colonnes):
+            if self.lCTJ_matrice[0][iColonne] == 0:
                 return False
         return True
 
-    def annuler(self):
+    def CTJ_annuler(self):
         """
         Annule le dernier coup (ou les deux derniers en mode IA).
 
         En mode 1v1, annule un coup et change de joueur.
         En mode IA, annule deux coups (joueur + IA) pour que le joueur rejoue.
         """
-        if undo_redo(self.CTJ_matrice, "u", self.CTJ_mode_ia) == 0:
+        if Undo_redo(self.lCTJ_matrice, "u", self.cCTJ_mode_ia) == 0:
             # En mode IA on recule de 2 coups → le joueur rejoue
-            if self.CTJ_mode_ia is not None:
+            if self.cCTJ_mode_ia is not None:
                 pass
             else:
                 # En 1v1 on change de joueur
-                self.CTJ_joueur_actuel *= -1
+                self.iCTJ_joueur_actuel *= -1
 
-            self.CTJ_partie_terminee = False
-            self.CTJ_vue.rafraichir_grille(self.CTJ_matrice)
+            self.bCTJ_partie_terminee = False
+            self.CTJ_vue.VGR_rafraichir_grille(self.lCTJ_matrice)
 
-    def refaire(self):
+    def CTJ_refaire(self):
         """
         Rétablit le coup précédemment annulé.
 
         En mode 1v1, refait un coup et change de joueur.
-        En mode IA, refait deux coups (joueur + IA) pour maintenir la cohérence.
+        En mode IA, refait deux coups (joueur + IA) pour que ca marche.
         """
-        if undo_redo(self.CTJ_matrice, "r", self.CTJ_mode_ia) == 0:
+        if Undo_redo(self.lCTJ_matrice, "r", self.cCTJ_mode_ia) == 0:
             # En mode IA on rejoue un tour complet → le joueur reste le même
-            if self.CTJ_mode_ia is not None:
+            if self.cCTJ_mode_ia is not None:
                 pass
             else:
-                self.CTJ_joueur_actuel *= -1
+                self.iCTJ_joueur_actuel *= -1
 
-            self.CTJ_vue.rafraichir_grille(self.CTJ_matrice)
+            self.CTJ_vue.VGR_rafraichir_grille(self.lCTJ_matrice)
 
 
 class ControleurApplication:
@@ -285,32 +286,33 @@ class ControleurApplication:
     et orchestre le cycle de vie de l'application.
     """
 
-    def __init__(self, racine):
+    def __init__(self, CTAracine):
         """
         Initialise le contrôleur de l'application.
 
         Args:
-            racine (tk.Tk): Fenêtre principale Tkinter
+            CTAracine (tk.Tk): Fenêtre principale Tkinter
         """
-        self.CTA_racine = racine
+        self.CTA_racine = CTAracine
         self.CTA_controleur_jeu = None
-        self.afficher_accueil()
+        self.CTA_afficher_accueil()
 
-    def afficher_accueil(self):
+    def CTA_afficher_accueil(self):
         """
         Affiche le menu d'accueil avec les options de mode de jeu.
 
         Propose le mode 1v1 et les trois niveaux de difficulté contre l'IA.
         """
-        vue_accueil = VueAccueil(self.CTA_racine)
-        vue_accueil.creer_interface(
-            rappel_1v1=lambda: self.afficher_parametres(None, None),
-            rappel_facile=lambda: self.afficher_parametres("jaune", 1),
-            rappel_moyen=lambda: self.afficher_parametres("jaune", 3),
-            rappel_difficile=lambda: self.afficher_parametres("jaune", 5)
+        cVue_accueil = VueAccueil(self.CTA_racine)
+        # Construit l'affichage d'accueil avec les boutons et les fonction
+        cVue_accueil.VAC_creer_interface(
+            cRappel_1v1=lambda: self.CTA_afficher_parametres(None, None),
+            cRappel_facile=lambda: self.CTA_afficher_parametres("jaune", 1),
+            cRappel_moyen=lambda: self.CTA_afficher_parametres("jaune", 3),
+            cRappel_difficile=lambda: self.CTA_afficher_parametres("jaune", 5)
         )
 
-    def afficher_parametres(self, mode_ia, difficulte):
+    def CTA_afficher_parametres(self, cMode_ia, iDifficulte):
         """
         Affiche la page des paramètres de jeu.
 
@@ -318,18 +320,19 @@ class ControleurApplication:
         qui commence, et la couleur du joueur (en mode IA).
 
         Args:
-            mode_ia (str or None): "rouge", "jaune" ou None selon le mode choisi
-            difficulte (int or None): 1, 3 ou 5 selon la difficulté choisie
+            cMode_ia (str or None): "rouge", "jaune" ou None selon le mode choisi
+            iDifficulte (int or None): 1, 3 ou 5 selon la difficulté choisi
         """
-        vue_parametres = VueParametres(self.CTA_racine, mode_ia, difficulte)
-        vue_parametres.creer_interface(
-            rappel_jouer=lambda var_lignes, var_colonnes, var_alignes, var_premier, var_couleur: self.lancer_jeu(
-                mode_ia, difficulte, var_lignes, var_colonnes, var_alignes, var_premier, var_couleur
+        cVue_parametres = VueParametres(self.CTA_racine, cMode_ia, iDifficulte)
+        # Construit l'affichage des parametres avec les boutons et les fonction
+        cVue_parametres.VPA_creer_interface(
+            cRappel_jouer=lambda cVar_lignes, cVar_colonnes, cVar_alignes, cVar_premier, cVar_couleur: self.CTA_lancer_jeu(
+                cMode_ia, iDifficulte, cVar_lignes, cVar_colonnes, cVar_alignes, cVar_premier, cVar_couleur
             ),
-            rappel_retour=self.afficher_accueil
+            cRappel_retour=self.CTA_afficher_accueil
         )
 
-    def lancer_jeu(self, mode_ia, difficulte, var_lignes, var_colonnes, var_alignes, var_premier, var_couleur_joueur):
+    def CTA_lancer_jeu(self, cMode_ia, iDifficulte, cVar_lignes, cVar_colonnes, cVar_alignes, cVar_premier, cVar_couleur_joueur):
         """
         Lance une nouvelle partie avec les paramètres configurés.
 
@@ -337,78 +340,78 @@ class ControleurApplication:
         détermine qui commence, et crée l'interface des actions.
 
         Args:
-            mode_ia (str or None): Mode de jeu sélectionné
-            difficulte (int or None): Niveau de difficulté de l'IA
-            var_lignes (tk.StringVar): Variable contenant le nombre de lignes
-            var_colonnes (tk.StringVar): Variable contenant le nombre de colonnes
-            var_alignes (tk.StringVar): Variable contenant le nombre de pions à aligner
-            var_premier (tk.StringVar): Variable indiquant qui commence
-            var_couleur_joueur (tk.StringVar): Variable contenant la couleur du joueur
+            cMode_ia (str or None): Mode de jeu sélectionné
+            iDifficulte (int or None): Niveau de difficulté de l'IA
+            cVar_lignes (tk.StringVar): Variable contenant le nombre de lignes
+            cVar_colonnes (tk.StringVar): Variable contenant le nombre de colonnes
+            cVar_alignes (tk.StringVar): Variable contenant le nombre de pions à aligner
+            cVar_premier (tk.StringVar): Variable indiquant qui commence
+            cVar_couleur_joueur (tk.StringVar): Variable contenant la couleur du joueur
         """
         # Nettoyer la fenêtre
-        for widget in self.CTA_racine.winfo_children():
-            widget.destroy()
-
-        lignes = int(var_lignes.get())
-        colonnes = int(var_colonnes.get())
-        nombre_alignes = int(var_alignes.get())
+        for cWidget in self.CTA_racine.winfo_children():
+            cWidget.destroy()
+        # Recupere la valeur des lignes, colonnes et nb aligne et les convertit en int
+        iLignes = int(cVar_lignes.get())
+        iColonnes = int(cVar_colonnes.get())
+        iNombre_alignes = int(cVar_alignes.get())
 
         # Déterminer qui commence et les couleurs
-        if mode_ia is None:
+        if cMode_ia is None:
             # Mode 1v1
-            premier = var_premier.get()
-            mode_ia_final = None
-            couleur_joueur = None
+            cPremier = cVar_premier.get()
+            cMode_ia_final = None
+            cCouleur_joueur = None
         else:
             # Mode contre IA
-            couleur_joueur = var_couleur_joueur.get()
-            premier = var_premier.get()
+            cCouleur_joueur = cVar_couleur_joueur.get()
+            cPremier = cVar_premier.get()
 
             # Déterminer le mode_ia en fonction de la couleur du joueur
-            if couleur_joueur == "Rouge":
-                mode_ia_final = "jaune"
+            if cCouleur_joueur == "Rouge":
+                cMode_ia_final = "jaune"
             else:
-                mode_ia_final = "rouge"
+                cMode_ia_final = "rouge"
 
         # Créer le jeu
         self.CTA_controleur_jeu = ControleurJeu(
-            self.CTA_racine, lignes=lignes, colonnes=colonnes, nombre_alignes=nombre_alignes,
-            mode_ia=mode_ia_final if mode_ia else None, difficulte=difficulte
+            self.CTA_racine, iLignes=iLignes, iColonnes=iColonnes, iNombre_alignes=iNombre_alignes,
+            cMode_ia=cMode_ia_final if cMode_ia else None, iDifficulte=iDifficulte
         )
 
         # Déterminer qui commence
-        if mode_ia is None:
+        if cMode_ia is None:
             # Mode 1v1
-            if premier == "Jaune":
-                self.CTA_controleur_jeu.CTJ_joueur_actuel = -1
+            if cPremier == "Jaune":
+                self.CTA_controleur_jeu.iCTJ_joueur_actuel = -1
             else:
-                self.CTA_controleur_jeu.CTJ_joueur_actuel = 1
+                self.CTA_controleur_jeu.iCTJ_joueur_actuel = 1
         else:
             # Mode contre IA
-            if premier == "IA":
+            if cPremier == "IA":
                 # L'IA commence
-                if mode_ia_final == "rouge":
-                    self.CTA_controleur_jeu.CTJ_joueur_actuel = 1
+                if cMode_ia_final == "rouge":
+                    self.CTA_controleur_jeu.iCTJ_joueur_actuel = 1
                 else:
-                    self.CTA_controleur_jeu.CTJ_joueur_actuel = -1
+                    self.CTA_controleur_jeu.iCTJ_joueur_actuel = -1
                 # Faire jouer l'IA après un délai
-                self.CTA_racine.after(500, self.CTA_controleur_jeu.tour_ia)
+                self.CTA_racine.after(500, self.CTA_controleur_jeu.CTJ_tour_ia)
             else:
                 # Le joueur commence
-                if couleur_joueur == "Rouge":
-                    self.CTA_controleur_jeu.CTJ_joueur_actuel = 1
+                if cCouleur_joueur == "Rouge":
+                    self.CTA_controleur_jeu.iCTJ_joueur_actuel = 1
                 else:
-                    self.CTA_controleur_jeu.CTJ_joueur_actuel = -1
+                    self.CTA_controleur_jeu.iCTJ_joueur_actuel = -1
 
         print("ici le jeu est lancé")
 
         # Créer les actions
-        vue_actions = VueActions(self.CTA_racine)
-        vue_actions.creer_interface(
-            rappel_annuler=self.CTA_controleur_jeu.annuler,
-            rappel_refaire=self.CTA_controleur_jeu.refaire,
-            rappel_rejouer=lambda: self.lancer_jeu(
-                mode_ia, difficulte, var_lignes, var_colonnes, var_alignes, var_premier, var_couleur_joueur
+        cVue_actions = VueActions(self.CTA_racine)
+        cVue_actions.VAT_creer_interface(
+            cRappel_annuler=self.CTA_controleur_jeu.CTJ_annuler,
+            cRappel_refaire=self.CTA_controleur_jeu.CTJ_refaire,
+            cRappel_rejouer=lambda: self.CTA_lancer_jeu(
+                cMode_ia, iDifficulte, cVar_lignes, cVar_colonnes, cVar_alignes, cVar_premier, cVar_couleur_joueur
             ),
-            rappel_accueil=self.afficher_accueil
+            cRappel_accueil=self.CTA_afficher_accueil
         )
